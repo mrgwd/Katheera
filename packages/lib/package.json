@@ -1,0 +1,16 @@
+{
+  "name": "@workspace/lib",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "exports": {
+    "./utils": "./src/utils.ts"
+  },
+  "main": "./src/utils.ts",
+  "types": "./src/utils.ts",
+  "dependencies": {
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.4.1"
+  }
+}
