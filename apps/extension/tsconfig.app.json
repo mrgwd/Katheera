@@ -22,7 +22,18 @@
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+
+    /* Paths */
+    "baseUrl": ".",
+    "paths": {
+      "@workspace/*": ["../../packages/*"],
+      "@workspace/ui/*": ["../../packages/ui/src/*"],
+      "@workspace/model/*": ["../../packages/model/src/*"],
+      "@workspace/audio-processing/*": [
+        "../../packages/audio-processing/src/*",
+      ],
+    },
   },
-  "include": ["src"]
+  "include": ["src"],
 }

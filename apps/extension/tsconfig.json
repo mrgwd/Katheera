@@ -2,6 +2,17 @@
   "files": [],
   "references": [
     { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ]
+    { "path": "./tsconfig.node.json" },
+  ],
+  "compilerOptions": {
+    "baseUrl": ".", // Set the base URL for path resolution
+    "paths": {
+      "@workspace/*": ["../../packages/*"],
+      "@workspace/ui/*": ["../../packages/ui/src/*"],
+      "@workspace/model/*": ["../../packages/model/src/*"],
+      "@workspace/audio-processing/*": [
+        "../../packages/audio-processing/src/*",
+      ],
+    },
+  },
 }
