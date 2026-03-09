@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Katheera | Microphone Permission</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 90vh;
+            margin: 0;
+            background-color: #f4f4f9;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 0px;
+            color: #333;
+        }
+
+        p {
+            margin-bottom: 15px;
+            color: #888;
+            max-width: 400px;
+        }
+
+        span {
+            margin-top: 20px;
+            color: #888;
+        }
+
+        a {
+            color: #888;
+        }
+
+        a:hover {
+            color: #c18cc1;
+        }
+
+        button {
+            padding: 5px 14px;
+            font-size: 12px;
+            font-weight: 500;
+            color: white;
+            background-color: #c18cc1;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #cf9ecf;
+        }
+
+        img {
+            width: 96px;
+            height: 96px;
+        }
+    </style>
+</head>
+
+<body>
+    <img src="./images/permission.png" alt="Katheera mic permission" />
+    <h1>Microphone Access Required</h1>
+    <p>Katheera needs microphone access. Please click the button below and click "<strong>Allow while
+            visiting the site</strong>" in the browser
+        prompt</p>
+    <button id="grantButton">Grant Permission</button>
+    <span>Your voice is not leaving your browser. <a href="https://katheera.mohamedramadan.dev/privacy">Privacy
+            policy</a></span>
+    <script src="permission.js"></script>
+</body>
+
+</html>
