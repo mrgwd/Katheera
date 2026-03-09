@@ -78,7 +78,8 @@
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;
   --animate-slow-spin: slow-spin 10s linear infinite;
-  --animate-shimmer: shimmer 1s linear 1 forwards;
+  --animate-shimmer-a: shimmer-a 1s linear 1 forwards;
+  --animate-shimmer-b: shimmer-b 1s linear 1 forwards;
   --animate-fade-down: fade-down 500ms ease-out forwards;
 
   @keyframes slow-spin {
@@ -117,7 +118,15 @@
       height: 0;
     }
   }
-  @keyframes shimmer {
+  @keyframes shimmer-a {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: translateX(-100%);
+    }
+  }
+  @keyframes shimmer-b {
     from {
       transform: translateX(100%);
     }
@@ -169,6 +178,10 @@
   }
 }
 
-/* .impulse {
-  @apply before:animate-shimmer relative overflow-hidden before:absolute before:inset-0 before:-translate-x-full before:border-t before:border-rose-100/10 before:bg-linear-to-r before:from-transparent before:via-rose-100/10 before:to-transparent before:content-[''];
-} */
+.shimmer-even {
+  @apply before:animate-shimmer-a relative overflow-hidden before:absolute before:inset-0 before:-translate-x-full before:border-t before:border-rose-100/10 before:bg-linear-to-r before:from-transparent before:via-rose-100/10 before:to-transparent before:content-[''];
+}
+
+.shimmer-odd {
+  @apply before:animate-shimmer-b relative overflow-hidden before:absolute before:inset-0 before:-translate-x-full before:border-t before:border-rose-100/10 before:bg-linear-to-r before:from-transparent before:via-rose-100/10 before:to-transparent before:content-[''];
+}
