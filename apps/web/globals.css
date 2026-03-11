@@ -1,0 +1,7 @@
+@import "@workspace/styles/globals";
+
+@layer base {
+  .layout {
+    @apply mx-auto w-11/12 max-w-3xl;
+  }
+}
