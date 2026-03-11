@@ -23,17 +23,17 @@ export default function AppLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ar" dir="rtl" suppressHydrationWarning>
-      <body
-        className={`${vazirmatn.variable} mx-auto max-w-xs p-2 font-sans antialiased`}
-      >
-        <AppBootstrapper />
-        <Providers>
-          <DynamicMetadata />
-          {children}
-          <FloatingMiniBarWrapper />
-        </Providers>
-      </body>
-    </html>
+    <main
+      lang="ar"
+      dir="rtl"
+      className={`${vazirmatn.variable} mx-auto max-w-xs p-2 font-sans antialiased`}
+    >
+      <AppBootstrapper />
+      <Providers>
+        <DynamicMetadata />
+        {children}
+        <FloatingMiniBarWrapper />
+      </Providers>
+    </main>
   );
 }

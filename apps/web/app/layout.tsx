@@ -1,5 +1,6 @@
 import { Vazirmatn } from "next/font/google";
 import "../globals.css";
+import { ThemeProvider as NextThemesProvider } from "@workspace/ui/components/theme-provider";
 
 const vazirmatn = Vazirmatn({
   subsets: ["latin"],
@@ -12,11 +13,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ar">
-      <body
-        className={`${vazirmatn.variable} mt-10 font-sans antialiased md:mt-16`}
-      >
-        {children}
+    <html lang="ar" suppressHydrationWarning>
+      <body className={`${vazirmatn.variable} font-sans antialiased`}>
+        <NextThemesProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+          enableColorScheme
+        >
+          {children}
+        </NextThemesProvider>
       </body>
     </html>
   );
