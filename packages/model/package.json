@@ -1,0 +1,19 @@
+{
+  "name": "@workspace/model",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "exports": {
+    "./modelService": "./src/ModelService.ts",
+    "./types": "./src/types.ts",
+    "./hooks/useModelLoader": "./src/hooks/useModelLoader.ts"
+  },
+  "dependencies": {
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.10",
+    "@types/react-dom": "^19.2.3"
+  }
+}
