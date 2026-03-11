@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@workspace/lib/utils";
-import { Button } from "@workspace/ui/components/button";
+import { Button, buttonVariants } from "@workspace/ui/components/button";
 import { ArrowRight, ChevronRight } from "@workspace/ui/index";
 import Link from "next/link";
 import { useState } from "react";
@@ -103,7 +103,12 @@ export function FAQ() {
           Feel free to open an issue on GitHub or reach out to the developer
           directly.
         </p>
-        <Button className="px-8" render={<Link href="github">Contact</Link>} />
+        <Link
+          href="github"
+          className={cn("px-8", buttonVariants({ variant: "default" }))}
+        >
+          Contact
+        </Link>
       </div>
     </section>
   );
