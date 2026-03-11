@@ -1,0 +1,13 @@
+{
+  "name": "@workspace/azkar",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    "./*": "./src/*.ts"
+  },
+  "scripts": {
+    "lint": "eslint . --max-warnings 0",
+    "generate:component": "turbo gen react-component",
+    "check-types": "tsc --noEmit"
+  }
+}
