@@ -19,9 +19,9 @@ export const resampleAudio = (
     const fraction = position - index;
     if (index + 1 < audioData.length) {
       result[i] =
-        audioData[index] * (1 - fraction) + audioData[index + 1] * fraction;
+        audioData[index]! * (1 - fraction) + audioData[index + 1]! * fraction;
     } else {
-      result[i] = audioData[index];
+      result[i] = audioData[index]!;
     }
   }
   return result;
@@ -33,7 +33,7 @@ export const scaleAudioForClassification = (
 ): Float32Array => {
   const scaledAudioData = new Float32Array(audioData.length);
   for (let i = 0; i < audioData.length; i++) {
-    const scaled = audioData[i] * inputGain;
+    const scaled = audioData[i]! * inputGain;
     const clamped = scaled > 1 ? 1 : scaled < -1 ? -1 : scaled;
     scaledAudioData[i] = clamped * 32768.0;
   }
@@ -70,7 +70,8 @@ export const processClassifierResult = (
 
 export const processAudio = (audioData: Float32Array, INPUT_GAIN: number) => {
   let sum = 0;
-  for (let i = 0; i < audioData.length; i++) sum += audioData[i] * audioData[i];
+  for (let i = 0; i < audioData.length; i++)
+    sum += audioData[i]! * audioData[i]!;
   const rms = Math.sqrt(sum / audioData.length);
   if (rms < 0.001) return;
 
