@@ -4,13 +4,26 @@
   "type": "module",
   "private": true,
   "exports": {
-    "./utils": "./src/utils.ts"
+    "./utils": "./src/utils.ts",
+    "./registerServiceWorker": "./src/registerServiceWorker.ts",
+    "./useKeywordSpotting": "./src/useKeywordSpotting.ts",
+    "./useMicrophone": "./src/useMicrophone",
+    "./zikrStorage": "./src/zikrStorage.ts",
+    "./usePersistentMic.types": "./src/usePersistentMic.types.ts"
   },
   "main": "./src/utils.ts",
   "types": "./src/utils.ts",
   "dependencies": {
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "tailwind-merge": "^3.4.1"
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "tailwind-merge": "^3.4.1",
+    "@workspace/model": "workspace:*",
+    "@workspace/audio-processing": "workspace:*",
+    "@workspace/azkar": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.14"
   }
 }
