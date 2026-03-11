@@ -10,6 +10,7 @@
     "@base-ui/react": "^1.2.0",
     "@workspace/lib": "workspace:*",
     "@workspace/styles": "workspace:*",
+    "@workspace/model": "workspace:*",
     "lucide-react": "^0.563.0",
     "next-themes": "^0.4.6",
     "radix-ui": "^1.4.3",
@@ -31,9 +32,9 @@
     "typescript": "^5.9.3"
   },
   "exports": {
-    "./globals.css": "./src/globals.css",
     "./postcss.config": "./postcss.config.mjs",
     "./components/*": "./src/components/*.tsx",
+    "./layout/*": "./src/layout/*.tsx",
     "./hooks/*": "./src/hooks/*.ts"
   }
 }

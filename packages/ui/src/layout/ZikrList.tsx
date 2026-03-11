@@ -7,9 +7,11 @@ import ZikrCard from "./ZikrCard";
 export default function ZikrList({
   list,
   LinkComponent = "a",
+  href = "/zikr",
 }: {
   list: Detections;
   LinkComponent?: React.ElementType;
+  href?: string;
 }) {
   return (
     <div className="grid grid-cols-2 gap-2">
@@ -17,14 +19,14 @@ export default function ZikrList({
         .filter(([_, zikr]) => zikr.render)
         .map(([id, zikr]) => {
           return (
-            <LinkComponent key={id} href={`/zikr/${id}`}>
+            <LinkComponent key={id} href={href + "/" + id}>
               <ZikrCard
                 className={cn(
                   zikr.count % 2 === 0 ? "shimmer-even" : "shimmer-odd",
                 )}
               >
-                <ZikrCard.Count>{zikr.count}</ZikrCard.Count>
                 <ZikrCard.Header>{zikr.label}</ZikrCard.Header>
+                <ZikrCard.Count>{zikr.count}</ZikrCard.Count>
               </ZikrCard>
             </LinkComponent>
           );

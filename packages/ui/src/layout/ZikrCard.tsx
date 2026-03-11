@@ -1,4 +1,5 @@
 import { cn } from "@workspace/lib/utils";
+import { Button } from "../components/button";
 
 const ZikrCard = ({
   children,
@@ -8,14 +9,9 @@ const ZikrCard = ({
   className?: string;
 }) => {
   return (
-    <div
-      className={cn(
-        "bg-muted dark:bg-muted/50 text-foreground/80 flex items-center justify-between rounded-xl px-5 py-3",
-        className,
-      )}
-    >
+    <Button size="lg" variant="secondary" className={cn("w-full", className)}>
       {children}
-    </div>
+    </Button>
   );
 };
 
