@@ -18,6 +18,7 @@
  */
 
 import { useEffect, useRef } from "react";
+import { Square } from "../index";
 
 interface FloatingMiniBarProps {
   isListening: boolean;
@@ -91,7 +92,8 @@ export function FloatingMiniBar({
           </button>
         </div>
 
-        {/* Stop button */}
+        {/* Stop button (bespoke always-dark bar stays native — only the
+            glyph comes from the system, see F3). */}
         <button
           onClick={(e) => {
             e.stopPropagation();
@@ -100,10 +102,7 @@ export function FloatingMiniBar({
           className="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-700 text-neutral-300 transition hover:bg-red-500 hover:text-white"
           aria-label="إيقاف الاستماع"
         >
-          {/* Stop square icon */}
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
-            <rect x="1" y="1" width="10" height="10" rx="2" />
-          </svg>
+          <Square className="size-3" fill="currentColor" />
         </button>
       </div>
     </>

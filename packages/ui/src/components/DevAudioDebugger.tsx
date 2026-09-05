@@ -15,6 +15,7 @@ import {
 } from "./select";
 import { Badge } from "./badge";
 import { Card } from "./card";
+import { Bug, Download, LoaderCircle, Play, Upload, X } from "../index";
 
 export type DebugChunk = {
   rawAudio: number[];
@@ -23,6 +24,8 @@ export type DebugChunk = {
   timestamp: number;
 };
 
+import { createWavBlob } from "@workspace/audio-processing/wav";
+import { uploadWavToEdgeImpulse } from "@workspace/audio-processing/edge-impulse";
 import { useSettings } from "../hooks/useSettings";
 
 /**
@@ -94,7 +97,7 @@ export const DevAudioDebugger = ({ apiKey }: { apiKey?: string }) => {
         title="Open Audio Debugger"
       >
         <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-          🐞
+          <Bug />
         </span>
       </Button>
     );
@@ -108,12 +111,15 @@ export const DevAudioDebugger = ({ apiKey }: { apiKey?: string }) => {
       className="fixed right-0 bottom-0 z-50 flex max-h-[80vh] w-full flex-col gap-3 overflow-hidden overflow-x-hidden rounded-t-xl border border-zinc-200 bg-white p-3 text-xs shadow-xl sm:w-[400px] md:right-4 md:bottom-16 md:h-[600px] dark:border-zinc-800 dark:bg-zinc-900"
     >
       <div className="flex shrink-0 items-center justify-between border-b pb-2 dark:border-zinc-800">
-        <h3 className="font-bold">🐞 Audio Debugger</h3>
+        <h3 className="flex items-center gap-1.5 font-bold">
+          <Bug className="size-4" /> Audio Debugger
+        </h3>
         <button
           onClick={() => setIsOpen(false)}
           className="text-zinc-500 hover:text-black dark:hover:text-white"
+          aria-label="Close Audio Debugger"
         >
-          ✕
+          <X className="size-4" />
         </button>
       </div>
 
@@ -238,35 +244,22 @@ const AudioChunkView = ({
       return;
     }
 
-    // 1. Prepare the standard WAV blob
-    const blob = createWavBlob(data);
-    const fileName = `sample_${Date.now()}.wav`;
-
-    // 2. IMPORTANT: Use the /files endpoint instead of /data
-    const endpoint = Math.random() < 0.8 ? "training" : "testing";
-    const url = `https://ingestion.edgeimpulse.com/api/${endpoint}/files`;
-
-    // 3. Use FormData (The /files endpoint loves this)
-    const formData = new FormData();
-    formData.append("data", blob, fileName);
-
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "x-api-key": apiKey,
-        "x-label": uploadLabel,
-        // DO NOT set Content-Type header; let the browser set the multipart boundary
-      },
-      body: formData,
-    });
-
-    const result = await response.json();
-
-    if (!response.ok) {
-      throw new Error(`Upload failed: ${JSON.stringify(result)}`);
+    setIsUploading(true);
+    try {
+      const endpoint = Math.random() < 0.8 ? "training" : "testing";
+      await uploadWavToEdgeImpulse({
+        apiKey,
+        label: uploadLabel,
+        fileName: `sample_${Date.now()}.wav`,
+        audioData: data,
+        endpoint,
+      });
+      alert(`Uploaded to ${endpoint} successfully as '${uploadLabel}'`);
+    } catch (error) {
+      alert(error instanceof Error ? error.message : "Upload failed");
+    } finally {
+      setIsUploading(false);
     }
-    alert(`Uploaded to ${endpoint} successfully as '${uploadLabel}'`);
-    setIsUploading(false);
   };
 
   return (
@@ -317,7 +310,11 @@ const AudioChunkView = ({
             disabled={isUploading || !uploadLabel}
             className="h-5 min-h-0 border-zinc-200 px-1.5 py-0 text-[10px] shadow-none dark:border-zinc-800"
           >
-            {isUploading ? "⏳" : "☁️"}
+            {isUploading ? (
+              <LoaderCircle className="size-3 animate-spin" />
+            ) : (
+              <Upload className="size-3" />
+            )}
           </Button>
         </div>
       </div>
@@ -331,9 +328,10 @@ const AudioChunkView = ({
               <button
                 onClick={() => playAudio(chunk.rawAudio)}
                 title="Play raw"
+                aria-label="Play raw audio"
                 className="transition-transform hover:scale-110"
               >
-                ▶️
+                <Play className="size-3" />
               </button>
             </span>
             <span>n={chunk.rawAudio.length}</span>
@@ -353,16 +351,18 @@ const AudioChunkView = ({
               <button
                 onClick={() => playAudio(chunk.processedAudio)}
                 title="Play processed"
+                aria-label="Play processed audio"
                 className="transition-transform hover:scale-110"
               >
-                ▶️
+                <Play className="size-3" />
               </button>
               <button
                 onClick={() => downloadWav(chunk.processedAudio)}
                 title="Download WAV"
+                aria-label="Download WAV"
                 className="ml-0.5 transition-transform hover:scale-110"
               >
-                💾
+                <Download className="size-3" />
               </button>
             </span>
             <span>n={chunk.processedAudio.length}</span>
@@ -430,30 +430,3 @@ function drawWaveform(
   ctx.stroke();
 }
 
-function createWavBlob(data: number[]): Blob {
-  const sampleRate = 16000;
-  const samples = new Int16Array(
-    data.map((v) =>
-      Math.max(-32768, Math.min(32767, Math.abs(v) > 1.0 ? v : v * 32768)),
-    ),
-  );
-  const buf = new ArrayBuffer(44 + samples.byteLength);
-  const view = new DataView(buf);
-  const str = (off: number, s: string) =>
-    [...s].forEach((c, i) => view.setUint8(off + i, c.charCodeAt(0)));
-  str(0, "RIFF");
-  view.setUint32(4, 36 + samples.byteLength, true);
-  str(8, "WAVE");
-  str(12, "fmt ");
-  view.setUint32(16, 16, true);
-  view.setUint16(20, 1, true);
-  view.setUint16(22, 1, true);
-  view.setUint32(24, sampleRate, true);
-  view.setUint32(28, sampleRate * 2, true);
-  view.setUint16(32, 2, true);
-  view.setUint16(34, 16, true);
-  str(36, "data");
-  view.setUint32(40, samples.byteLength, true);
-  new Int16Array(buf, 44).set(samples);
-  return new Blob([buf], { type: "audio/wav" });
-}

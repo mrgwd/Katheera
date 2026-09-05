@@ -23,11 +23,12 @@ export default function ButtonContainer({
             isListening ? "-translate-y-16" : "-translate-y-44 opacity-0",
           )}
         />
+        {/* Bespoke mic zone (morphing radius/gradient) — native button by
+            design (see UI_CONSISTENCY.md §3). */}
         <button
-          role="button"
-          aria-roledescription="microphone button"
           onClick={onToggleListening}
           disabled={!isModelLoaded}
+          aria-label={isListening ? "Stop listening" : "Start listening"}
           className={cn(
             "flex aspect-square h-full w-full items-center justify-center rounded-3xl bg-linear-0 from-transparent transition-all duration-500 ease-in-out hover:cursor-pointer",
             !isModelLoaded && "cursor-not-allowed opacity-50",

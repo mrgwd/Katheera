@@ -36,14 +36,16 @@ export default function SettingsPanel() {
     <div
       ref={panelRef}
       className={cn(
-        "settings-panel-button bg-background absolute top-2 left-1/2 z-50 flex aspect-square h-9.5 -translate-x-1/2 flex-col items-center overflow-hidden rounded-md border text-xs opacity-0 shadow-xs transition-all duration-400 group-hover:opacity-100",
-        isOpen ? "top-0 h-54 w-full rounded-4xl opacity-100! md:h-70" : "w-10",
+        "settings-panel-button bg-background absolute top-2 left-1/2 z-50 flex aspect-square h-9.5 -translate-x-1/2 flex-col items-center overflow-hidden rounded-xl border text-xs opacity-0 shadow-xs transition-all duration-400 group-hover:opacity-100",
+        isOpen
+          ? "top-0 h-54 w-full rounded-4xl pt-2 opacity-100! md:h-70"
+          : "w-10",
       )}
     >
       <Button
         variant="ghost"
         onClick={handleToggle}
-        className="hover:bg-background"
+        className="hover:bg-background rounded-xl"
       >
         {isOpen ? <X /> : <Settings />}
       </Button>
