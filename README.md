@@ -1,135 +1,170 @@
-# Turborepo starter
+  <div align="center"> <img width="36" height="36" alt="image"  src="https://raw.githubusercontent.com/mrgwd/i18n-boost/main/src/images/icon.webp"> <h1>Katheera: AI Sebha</h1> </div>
 
-This Turborepo starter is maintained by the Turborepo core team.
+Katheera is a browser extension and web app that automatically detects and counts your azkar as you say them. no tapping, no clicking, no interruptions to your worship.
 
-## Using this example
+## Features
 
-Run the following command:
+- 🎙️ **Truly hands-free**: just speak your azkar naturally
+- 🔒 **On-device AI**: your voice never leaves your browser
+- ⚡ **Lightweight**: ~5 MB model, no heavy downloads
+- 📴 **Offline**: model runs locally after first load
+- 🔢 **Auto-counts**: detects سبحان الله، الحمد لله, and more (growing list)
+- 📅 **Daily reset**: counts reset each day automatically
 
-```sh
-npx create-turbo@latest
-```
+## How It Works
 
-## What's inside?
+Katheera uses a custom AI model trained specifically on Arabic zikr phrases. The model runs entirely inside your browser using WebAssembly — no server, no cloud, no subscriptions.
 
-This Turborepo includes the following packages/apps:
+## What "Katheera" means?
 
-### Apps and Packages
+The name comes from a pattern found throughout the Quran — wherever Allah ﷻ mentions remembrance (zikr), it is almost always paired with the word **كثيرا** (katheera — _a lot_):
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+> يَا أَيُّهَا الَّذِينَ آمَنُوا اذْكُرُوا اللَّهَ ذِكْرًا كَثِيرًا
+>
+> وَالذَّاكِرِينَ اللَّهَ كَثِيرًا وَالذَّاكِرَاتِ
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+### The Journey to On-Device AI
 
-### Utilities
+The detection engine went through several iterations before landing on the current approach:
 
-This Turborepo has some additional tools already setup for you:
+| Approach                  | Verdict       | Reason                                                                |
+| ------------------------- | ------------- | --------------------------------------------------------------------- |
+| Web Speech API            | ❌ Dropped    | Chrome/Edge only; needs internet; breaks on tab switch / screen lock  |
+| Google Speech-to-Text     | ❌ Dropped    | Paid service — goes against the spirit of the app                     |
+| Pre-trained Vosk model    | ❌ Dropped    | 100s of MB; scored only 40/100 vs Web Speech API's 89/100 accuracy    |
+| Custom Edge Impulse model | ✅ **Chosen** | ~5 MB, accurate, offline-capable, private, free, works on all devices |
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+The custom model is trained with diverse samples (varying distance, tone, mic hardware) and achieves accuracy comparable to the Web Speech API while working entirely offline.
 
-### Build
+## Architecture
 
-To build all apps and packages, run the following command:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
-```
-
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+### Chrome
 
 ```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
+Popup (index.html)
+  │  sendMessage({action:"startMic"})
+  ▼
+background.js  (Service Worker)
+  │  chrome.offscreen.createDocument()
+  ▼
+offscreen.html  (hidden DOM page — AudioContext, getUserMedia)
+  │  captures mic → resamples audio → postMessage to iframe
+  ▼
+sandbox.html  (sandboxed iframe — relaxed CSP for WASM)
+  │  loads Edge Impulse WASM model → runs classifier
+  │  postMessage results back
+  ▼
+offscreen.ts  → background.js  → storage + badge
+  ▼
+Popup  (subscribes to storage changes, updates UI)
 ```
 
-### Develop
+## Tech Stack
 
-To develop all apps and packages, run the following command:
+### Extension
 
-```
-cd my-turborepo
+- **Vite** + **React** + **TypeScript**
+- **Tailwind CSS** + **shadcn/ui**
+- **TanStack Router** (hash history for extension popups)
+- **Edge Impulse** WASM model (~5 MB)
+- **webextension-polyfill** for cross-browser API compatibility
 
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
+### Web App
 
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
-```
+- **Next.js** (deployed at [katheera.mohamedramadan.dev](https://katheera.mohamedramadan.dev))
+- Same design system and shared packages via monorepo
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+### Monorepo
 
-```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
+Built with **Turborepo**. Shared packages include:
 
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
+- `@workspace/model` — Edge Impulse types and model assets
+- `@workspace/audio-processing` — resampling, classifier utilities
+- `@workspace/azkar` — azkar definitions and helpers
+- `@workspace/ui` — shared React components
+- `@workspace/lib` — storage utilities (daily reset, count sync)
 
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
+## Project Structure
 
 ```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
+apps/
+  extension/          # Chrome/Firefox browser extension
+  web/                # Next.js landing page & privacy policy
+packages/
+  model/              # Edge Impulse WASM model + types
+  audio-processing/   # Audio resampling & inference utilities
+  azkar/              # Azkar constants & helpers
+  ui/                 # Shared UI components
+  lib/                # Shared storage & logic
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+## Getting Started
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+### Prerequisites
 
+- Node.js 20+
+- pnpm
+
+### Install dependencies
+
+```bash
+pnpm install
 ```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
 
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
+### Build the extension
+
+```bash
+# Chrome (default)
+pnpm --filter extension build:chrome
+
+# Firefox
+pnpm --filter extension build:firefox
+
+# Both
+pnpm --filter extension build
 ```
 
-## Useful Links
+Build output is placed in `apps/extension/build/chrome/` and `apps/extension/build/firefox/`.
 
-Learn more about the power of Turborepo:
+### Load in Chrome
 
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+1. Go to `chrome://extensions`
+2. Enable **Developer mode**
+3. Click **Load unpacked** → select `apps/extension/build/chrome/`
+
+### Load in Firefox
+
+1. Go to `about:debugging#/runtime/this-firefox`
+2. Click **Load Temporary Add-on** → select any file inside `apps/extension/build/firefox/`
+
+## Supported Azkar
+
+| Zikr       | Status       |
+| ---------- | ------------ |
+| سبحان الله | ✅ Supported |
+| الحمد لله  | ✅ Supported |
+| الله أكبر  | ✅ Supported |
+
+More azkar are planned. The model is retrained and improved continuously.
+
+## Privacy
+
+Your voice is processed entirely on your device. No audio is sent to any server. No account required. No ads. No tracking.
+
+Read the full [Privacy Policy](https://katheera.mohamedramadan.dev/privacy).
+
+## Roadmap
+
+- [x] Complete الله أكبر detection
+- [ ] Add لا إله إلا الله and لا حول ولا قوة إلا بالله
+- [ ] Firefox stable release
+- [ ] Session history and statistics
+- [ ] Customizable daily targets
+
+## Contributing
+
+This project is currently in early development. If you want to contribute azkar audio samples (to improve model accuracy) or have feedback, reach out via the website.
+
+## License
+
+Personal project by [Mohamed Ramadan](https://mohamedramadan.dev). All rights reserved.
