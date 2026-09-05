@@ -1,5 +1,4 @@
 import type { EdgeImpulseClassifier } from "@workspace/model/types";
-import { normalizeAudio } from "@workspace/audio-processing/utils";
 
 declare global {
   interface Window {
@@ -9,8 +8,7 @@ declare global {
   }
 }
 
-
-let classifier: any = null;
+let classifier: EdgeImpulseClassifier | null = null;
 let isModelLoaded = false;
 
 // Initialize
@@ -53,12 +51,13 @@ window.addEventListener("message", (event) => {
 
   if (type === "AUDIO_DATA") {
     try {
-      // data is expected to be an array or Float32Array
-      // We need to convert it back to Float32Array if it was serialized
+      // Data is expected to be an array or Float32Array.
+      // It arrives already normalised (int16 range) by the offscreen
+      // document using live user settings — classify directly.
       const audioData = new Float32Array(data);
 
       // Run inference
-      const result = classifier.classify(normalizeAudio(audioData), false);
+      const result = classifier.classify(audioData, false);
 
       console.log("Sandbox: Inference result:", result);
 

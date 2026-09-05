@@ -22,8 +22,9 @@ export default defineConfig({
     viteStaticCopy({
       targets: [
         {
-          src: "public/manifest.json",
+          src: "public/manifest.chrome.json",
           dest: ".",
+          rename: "manifest.json",
         },
         {
           src: "../../packages/model/src/model/*",

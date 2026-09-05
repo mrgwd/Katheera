@@ -14,6 +14,12 @@ import ZikrList from "@workspace/ui/layout/ZikrList";
 import { TopBar } from "@workspace/ui/layout/TopBar";
 import { ext } from "../utils/browser";
 
+type BackgroundResponse = {
+  success?: boolean;
+  error?: string;
+  isActive?: boolean;
+};
+
 export const Route = createFileRoute("/")({
   component: App,
 });
@@ -55,10 +61,10 @@ function App() {
     // Check mic status
     (async () => {
       try {
-        const response: any = await ext.runtime.sendMessage({
+        const response = (await ext.runtime.sendMessage({
           action: "checkMicStatus",
-        });
-        if (response && response.isActive) {
+        })) as BackgroundResponse | undefined;
+        if (response?.isActive) {
           setIsActive(true);
           setStatus("Mic is running in the background (offscreen).");
         }
@@ -95,50 +101,55 @@ function App() {
 
   const startMicProcess = async () => {
     try {
-      const response: any = await ext.runtime.sendMessage({
+      const response = (await ext.runtime.sendMessage({
         action: "startMic",
-      });
+      })) as BackgroundResponse | undefined;
       console.log("Mic started", response);
-      if (response && response.success) {
+      if (response?.success) {
         setIsActive(true);
         setStatus("Mic is running in the background (offscreen).");
-      } else if (response && response.error) {
+      } else if (response?.error) {
         setStatus(`Error: ${response.error}`);
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error("Failed to start mic:", err);
-      setStatus(`Error: ${err.message}`);
+      setStatus(`Error: ${err instanceof Error ? err.message : String(err)}`);
     }
   };
 
   const stopMicProcess = async () => {
     try {
-      const response: any = await ext.runtime.sendMessage({
+      const response = (await ext.runtime.sendMessage({
         action: "stopMic",
-      });
+      })) as BackgroundResponse | undefined;
       console.log("Mic stopped", response);
-      if (response && response.success) {
+      if (response?.success) {
         setIsActive(false);
         setStatus("Mic stopped.");
-      } else if (response && response.error) {
+      } else if (response?.error) {
         setStatus(`Error: ${response.error}`);
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error("Failed to stop mic:", err);
-      setStatus(`Error: ${err.message}`);
+      setStatus(`Error: ${err instanceof Error ? err.message : String(err)}`);
     }
   };
 
   return (
     <div className="group text-center">
-      <TopBar />
-      <ButtonContainer
-        isListening={isActive}
-        isModelLoaded={true}
-        onToggleListening={handleToggleMic}
-      />
+      {/* Shared square zone: mic button + settings panel */}
+      <div className="relative aspect-square w-full">
+        <TopBar />
+        <div className="absolute inset-0">
+          <ButtonContainer
+            isListening={isActive}
+            isModelLoaded={true}
+            onToggleListening={handleToggleMic}
+          />
+        </div>
+      </div>
       <p className="text-foreground hidden">{status}</p>
-      <ZikrList list={counts} LinkComponent={Link} />
+      <ZikrList list={counts} LinkComponent={Link} to="/zikr" />
     </div>
   );
 }

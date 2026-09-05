@@ -1,71 +1,65 @@
-// This script runs in the offscreen document
+// This script runs in the offscreen document (Chrome only)
 
 import {
-  CONFIDENCE_THRESHOLD,
   COOLDOWN_MS,
+  SAME_ZIKR_COOLDOWN_MS,
   TARGET_SAMPLE_RATE,
 } from "@workspace/audio-processing/constants";
-// import { loadFont } from "./utils/loadFont";
-
-// loadFont();
+import { ext } from "./utils/browser";
+import {
+  resampleAudio,
+  processAudio,
+  processClassifierResult,
+} from "@workspace/audio-processing/utils";
+import {
+  DEFAULT_SETTINGS,
+  loadSettingsAsync,
+  subscribeSettings,
+  type AppSettings,
+} from "@workspace/lib/settings";
+import type {
+  EdgeImpulseResult,
+  EdgeImpulseResultItem,
+  WindowWithAudioCtx,
+} from "@workspace/model/types";
 
 (async () => {
-  console.log("Offscreen script running - Sandbox Bridge Version");
+  console.log("Offscreen script running - AudioWorklet version");
 
-  // State
-  let lastDetectionTime: Record<string, number> = {};
+  // ── Live settings (updated via chrome.storage.onChanged) ─────────────
+  let currentSettings: AppSettings = { ...DEFAULT_SETTINGS };
+  try {
+    currentSettings = await loadSettingsAsync();
+    console.log("Offscreen: settings loaded", currentSettings);
+  } catch (e) {
+    console.warn("Offscreen: failed to load settings, using defaults", e);
+  }
+  // Keep settings up-to-date without requiring a mic restart
+  const unsubscribeSettings = subscribeSettings((updated) => {
+    console.log("Offscreen: settings updated", updated);
+    currentSettings = updated;
+  });
+
+  let activeZikrLabel: string | null = null;
+  let activeZikrTime: number = 0;
   let audioContext: AudioContext | null = null;
   let stream: MediaStream | null = null;
-  let processor: ScriptProcessorNode | null = null;
+  let workletNode: AudioWorkletNode | null = null;
+  let sourceNode: MediaStreamAudioSourceNode | null = null;
   let isSandboxReady = false;
+
+  // Holds the last resampled and processed audio windows for debugging
+  let lastResampledAudio: number[] = [];
+  let lastProcessedAudio: number[] = [];
 
   const sandboxFrame = document.getElementById(
     "ei-sandbox",
   ) as HTMLIFrameElement | null;
 
   console.log("Bridge: Sandbox frame element:", sandboxFrame);
-  console.log(
-    "Bridge: Sandbox frame contentWindow:",
-    sandboxFrame?.contentWindow,
-  );
-
-  // --- Helper Functions ---
-
-  // Simple linear interpolation resampling
-  const resampleAudio = (
-    audioData: Float32Array,
-    fromSampleRate: number,
-    toSampleRate: number,
-  ) => {
-    if (fromSampleRate === toSampleRate) {
-      return audioData;
-    }
-
-    const sampleRateRatio = fromSampleRate / toSampleRate;
-    const newLength = Math.round(audioData.length / sampleRateRatio);
-    const result = new Float32Array(newLength);
-
-    for (let i = 0; i < newLength; i++) {
-      const position = i * sampleRateRatio;
-      const index = Math.floor(position);
-      const fraction = position - index;
-
-      if (index + 1 < audioData.length) {
-        result[i] =
-          audioData[index] * (1 - fraction) + audioData[index + 1] * fraction;
-      } else {
-        result[i] = audioData[index];
-      }
-    }
-
-    return result;
-  };
 
   // Handle messages from sandbox
   window.addEventListener("message", (event) => {
-    // Security check: ensure message is from our sandbox
-    // Note: In extensions, origin might be null or specific, but we trust the iframe we created.
-
     const { type, results, error } = event.data;
 
     if (type === "MODEL_LOADED") {
@@ -79,29 +73,19 @@ import {
     }
   });
 
-  const handleInferenceResults = (results: any[]) => {
+  const handleInferenceResults = (results: EdgeImpulseResultItem[]) => {
     console.log("Bridge: Received inference results:", results);
 
-    let maxConfidence = 0;
-    let detectedLabel: string | null = null;
+    // Use live confidenceThreshold from settings
+    const detectedLabel =
+      processClassifierResult(
+        { results } as EdgeImpulseResult,
+        currentSettings.confidenceThreshold,
+      )?.label ?? null;
 
-    results.forEach((prediction: any) => {
-      console.log(
-        `Bridge: Prediction - ${prediction.label}: ${(prediction.value * 100).toFixed(1)}%`,
-      );
-
-      if (
-        prediction.value > maxConfidence &&
-        prediction.value > CONFIDENCE_THRESHOLD
-      ) {
-        maxConfidence = prediction.value;
-        detectedLabel = prediction.label;
-      }
-    });
-
-    console.log(
-      `Bridge: Max confidence: ${(maxConfidence * 100).toFixed(1)}%, Label: ${detectedLabel}`,
-    );
+    if (detectedLabel) {
+      console.log(`Bridge: Detected Label: ${detectedLabel}`);
+    }
 
     if (
       detectedLabel &&
@@ -109,26 +93,52 @@ import {
       detectedLabel !== "unknown"
     ) {
       const now = Date.now();
-      const last = lastDetectionTime[detectedLabel] || 0;
 
-      if (now - last > COOLDOWN_MS) {
-        console.log(
-          `Detected: ${detectedLabel} (${(maxConfidence * 100).toFixed(1)}%)`,
-        );
-        lastDetectionTime[detectedLabel] = now;
-
-        // Send to background
-        chrome.runtime.sendMessage({
-          action: "wordDetected",
-          word: detectedLabel,
-        });
-      } else {
-        console.log(`Bridge: Cooldown active for ${detectedLabel}, skipping`);
+      if (activeZikrLabel === detectedLabel) {
+        if (now - activeZikrTime < SAME_ZIKR_COOLDOWN_MS) {
+          return;
+        }
+      } else if (activeZikrLabel !== null) {
+        if (now - activeZikrTime < COOLDOWN_MS) {
+          console.log(
+            `Bridge: Switch cooldown active, ignoring ${detectedLabel}`,
+          );
+          return;
+        }
       }
+
+      activeZikrLabel = detectedLabel;
+      activeZikrTime = now;
+
+      console.log(`Detected: ${detectedLabel}`);
+
+      ext.runtime.sendMessage({
+        action: "wordDetected",
+        word: detectedLabel,
+      });
+    }
+
+    // Forward debug data to the popup (dev only — no debugger in prod,
+    // and the Array copies below are wasted otherwise).
+    if (import.meta.env.DEV) {
+      ext.runtime
+        .sendMessage({
+          action: "debugAudioChunk",
+          detail: {
+            rawAudio: lastResampledAudio,
+            processedAudio: lastProcessedAudio,
+            results,
+          },
+        })
+        .catch(() => {
+          // Popup not open — drop silently
+        });
     }
   };
 
   const startListening = async () => {
+    // Guard against double-start (MODEL_LOADED re-fire, doc reuse).
+    if (stream || audioContext) return;
     try {
       console.log("Starting microphone...");
       stream = await navigator.mediaDevices.getUserMedia({
@@ -136,96 +146,128 @@ import {
           echoCancellation: true,
           noiseSuppression: true,
           autoGainControl: true,
+          channelCount: 1,
         },
       });
 
-      audioContext = new (
-        window.AudioContext || (window as any).webkitAudioContext
-      )();
+      const AudioCtor =
+        window.AudioContext ??
+        (window as WindowWithAudioCtx).webkitAudioContext;
+      if (!AudioCtor) {
+        throw new Error("AudioContext not available in this environment");
+      }
+      audioContext = new AudioCtor();
+
+      // Autoplay policy can leave the context suspended — resume explicitly.
+      if (audioContext.state === "suspended") {
+        await audioContext.resume();
+      }
+
+      await audioContext.audioWorklet.addModule(
+        "worklets/zikr-audio-processor.worklet.js",
+      );
+      console.log("Bridge: AudioWorklet loaded");
+
       const source = audioContext.createMediaStreamSource(stream);
-
-      // Create a script processor
-      const bufferSize = 4096;
-      processor = audioContext.createScriptProcessor(bufferSize, 1, 1);
-
+      sourceNode = source;
       const sampleRate = audioContext.sampleRate;
-      const continuousBuffer: number[] = [];
 
-      processor.onaudioprocess = (e) => {
+      workletNode = new AudioWorkletNode(audioContext, "zikr-audio-processor");
+
+      workletNode.port.onmessage = (event: MessageEvent) => {
+        if (event.data?.type !== "audio-window") return;
         if (!isSandboxReady) {
           console.log("Bridge: Sandbox not ready yet");
           return;
         }
-
-        if (!sandboxFrame) {
-          console.log("Bridge: Sandbox frame is null");
-          return;
-        }
-
-        if (!sandboxFrame.contentWindow) {
+        if (!sandboxFrame?.contentWindow) {
           console.log("Bridge: Sandbox frame contentWindow is null");
           return;
         }
 
-        const inputData = e.inputBuffer.getChannelData(0);
+        const rawSamples = new Float32Array(event.data.samples);
+        const resampledAudio = resampleAudio(
+          rawSamples,
+          sampleRate,
+          TARGET_SAMPLE_RATE,
+        );
 
-        // Add new audio data to continuous buffer
-        for (let i = 0; i < inputData.length; i++) {
-          continuousBuffer.push(inputData[i]);
+        // Normalise using live settings (targetRms / minRms).
+        // Null = silence — skip inference entirely.
+        const processedAudio = processAudio(
+          resampledAudio,
+          currentSettings.targetRms,
+          currentSettings.minRms,
+        );
+        if (!processedAudio) return;
+
+        // Store for pairing with the next inference result (dev only —
+        // the Array.from copies are expensive and unused in prod).
+        if (import.meta.env.DEV) {
+          lastResampledAudio = Array.from(resampledAudio);
+          lastProcessedAudio = Array.from(processedAudio);
         }
 
-        // When we have at least 1 second of audio
-        const oneSec = sampleRate;
-        if (continuousBuffer.length >= oneSec) {
-          const oneSecWindow = continuousBuffer.slice(0, oneSec);
+        console.log(
+          `Bridge: Sending ${processedAudio.length} samples to sandbox`,
+        );
 
-          // Remove processed audio (sliding window)
-          const slideAmount = Math.floor(sampleRate * 0.25);
-          continuousBuffer.splice(0, slideAmount);
-
-          // Resample to 16kHz
-          const resampledAudio = resampleAudio(
-            new Float32Array(oneSecWindow),
-            sampleRate,
-            TARGET_SAMPLE_RATE,
-          );
-
-          console.log(
-            `Bridge: Sending ${resampledAudio.length} samples to sandbox`,
-          );
-
-          // Send to sandbox for processing
-          // We must send a copy or transferable to avoid issues, though postMessage handles cloning.
-          // Sending as array buffer or typed array is fine.
-          sandboxFrame.contentWindow.postMessage(
-            {
-              type: "AUDIO_DATA",
-              data: resampledAudio, // TypedArray is cloned
-            },
-            "*",
-          );
-        }
+        sandboxFrame.contentWindow.postMessage(
+          { type: "AUDIO_DATA", data: processedAudio },
+          "*",
+        );
       };
 
-      source.connect(processor);
-      processor.connect(audioContext.destination);
+      source.connect(workletNode);
+      workletNode.connect(audioContext.destination);
 
       console.log("Listening...");
+      // Mic is truly live — tell the background so startMic can resolve.
+      ext.runtime.sendMessage({ action: "micStarted" }).catch(() => {});
     } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
       console.error("Error accessing microphone:", err);
+      releaseAudioResources();
+      ext.runtime.sendMessage({ action: "micError", error: message }).catch(() => {});
     }
   };
 
-  const stopListening = () => {
+  // Release all audio resources (stop, failed start, or retry).
+  const releaseAudioResources = () => {
+    try {
+      if (workletNode) {
+        workletNode.port.close();
+        workletNode.disconnect();
+      }
+    } catch {
+      // Already torn down — safe to ignore.
+    }
+    try {
+      sourceNode?.disconnect();
+    } catch {
+      // Already disconnected — safe to ignore.
+    }
     if (stream) stream.getTracks().forEach((t) => t.stop());
-    if (audioContext) audioContext.close();
+    if (audioContext) audioContext.close().catch(() => {});
+    workletNode = null;
+    sourceNode = null;
+    audioContext = null;
+    stream = null;
+    lastResampledAudio = [];
+    lastProcessedAudio = [];
+  };
+
+  const stopListening = () => {
+    unsubscribeSettings();
+    releaseAudioResources();
     console.log("Mic stopped");
   };
 
-  // Listen for stop message
-  chrome.runtime.onMessage.addListener((request) => {
+  ext.runtime.onMessage.addListener((message: unknown) => {
+    const request = message as Record<string, string>;
     if (request.action === "stopMic") {
       stopListening();
     }
   });
 })();
+

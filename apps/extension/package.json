@@ -5,7 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "pnpm run build:chrome && pnpm run build:firefox",
+    "build:chrome": "cross-env BROWSER=chrome tsc -b && cross-env BROWSER=chrome vite build",
+    "build:chrome:dev": "cross-env BROWSER=chrome tsc -b && cross-env BROWSER=chrome vite build --mode development",
+    "build:firefox": "cross-env BROWSER=firefox tsc -b && cross-env BROWSER=firefox vite build",
+    "build:firefox:dev": "cross-env BROWSER=firefox tsc -b && cross-env BROWSER=firefox vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -20,16 +24,20 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "tailwindcss": "^4.1.17",
-    "vite-plugin-static-copy": "^3.1.4"
+    "vite-plugin-static-copy": "^3.1.4",
+    "webextension-polyfill": "^0.12.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
     "@tanstack/router-plugin": "^1.163.2",
+    "@types/chrome": "^0.1.37",
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
+    "@types/webextension-polyfill": "^0.12.5",
     "@vitejs/plugin-react": "^5.1.1",
     "babel-plugin-react-compiler": "^1.0.0",
+    "cross-env": "^10.1.0",
     "eslint": "^9.39.1",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
