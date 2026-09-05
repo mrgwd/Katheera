@@ -1,16 +1,3 @@
-/**
- * useModelLoader — React adapter for ModelService.
- *
- * This hook contains ZERO loading logic. It only subscribes to the
- * ModelService singleton and reflects its state into React.
- *
- * This means:
- * - Component unmount/remount does NOT trigger a reload
- * - Navigation does NOT trigger a reload
- * - Multiple components calling this hook share the same state
- *   with no duplication
- */
-
 "use client";
 
 import { useEffect, useState } from "react";

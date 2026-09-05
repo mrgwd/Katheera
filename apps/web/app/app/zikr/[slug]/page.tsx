@@ -1,4 +1,6 @@
 import { JSX } from "react";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { getZikrData } from "@workspace/azkar/helpers";
 import { ZikrInfo } from "@workspace/azkar/types";
 import { ArrowRight } from "@workspace/ui/index";
@@ -7,20 +9,40 @@ import ZikrInfoList from "@workspace/ui/layout/ZikrInfoList";
 import Link from "next/link";
 import { SupportedAzkar } from "@workspace/azkar/constants";
 
+export const dynamicParams = false;
+
 export async function generateStaticParams() {
-  const slugs = SupportedAzkar.map((z) => z.id);
-  return slugs.map((slug) => ({
-    slug,
+  return SupportedAzkar.map((z) => ({
+    slug: z.id,
   }));
 }
 
-export default async function HadithPage({
+export async function generateMetadata({
   params,
 }: {
-  params: { slug: Promise<string> };
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const zikr = SupportedAzkar.find((z) => z.id === slug);
+  if (!zikr) return { title: "Not found" };
+  return {
+    title: zikr.label,
+    description: `Learn about ${zikr.label} — meaning, sources, and repeated recitation with Katheera.`,
+  };
+}
+
+export default async function ZikrDetailPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
 }): Promise<JSX.Element> {
-  const slug = await (await params).slug;
-  const data: ZikrInfo[] = await getZikrData(slug);
+  const { slug } = await params;
+  let data: ZikrInfo[];
+  try {
+    data = await getZikrData(slug);
+  } catch {
+    notFound();
+  }
   return (
     <div className="space-y-2">
       <Link href="/app">

@@ -1,5 +1,5 @@
 "use client";
-import { useMic } from "@/providers/MicProvider";
+import { useMic } from "@/features/zikr-app/providers/MicProvider";
 import { TopBar } from "@workspace/ui/layout/TopBar";
 import ButtonContainer from "@workspace/ui/layout/ButtonContainer";
 import ZikrList from "@workspace/ui/layout/ZikrList";

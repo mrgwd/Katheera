@@ -2,6 +2,7 @@
 
 import { cn } from "@workspace/lib/utils";
 import { buttonVariants } from "@workspace/ui/components/button";
+import { GITHUB_REPO_URL } from "@/lib/site";
 import Link from "next/link";
 import {
   Accordion,
@@ -55,7 +56,7 @@ const faqs = [
 
 export function FAQ() {
   return (
-    <section className="space-y-6">
+    <section id="faq" className="space-y-6">
       <div className="mb-14 text-center">
         <p className="text-primary mb-3 text-xs font-semibold tracking-widest uppercase">
           FAQ
@@ -89,7 +90,7 @@ export function FAQ() {
           directly.
         </p>
         <Link
-          href="github"
+          href={GITHUB_REPO_URL}
           className={cn("px-8", buttonVariants({ variant: "default" }))}
         >
           Contact

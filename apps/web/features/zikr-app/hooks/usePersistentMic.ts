@@ -1,13 +1,3 @@
-/**
- * apps/web/hooks/usePersistentMic.ts
- *
- * Web app implementation of the PersistentMic contract.
- *
- * State source: useKeywordSpotting (MicService + localStorage)
- * This is a thin adapter that maps useKeywordSpotting's output
- * to the shared PersistentMicState shape.
- */
-
 "use client";
 
 import { useMemo } from "react";
@@ -38,11 +28,6 @@ export function usePersistentMic(): UsePersistentMicResult {
       curr[1].lastAccuracy > best[1].lastAccuracy ? curr : best,
     )[0];
   }, [detections, isListening]);
-
-  // const counts = useMemo(
-  //   () => detections,
-  //   [detections]
-  // );
 
   return {
     isListening,

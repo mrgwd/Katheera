@@ -1,6 +1,6 @@
 {
   "name": "web",
-  "version": "0.0.1",
+  "version": "0.1.0-beta.2",
   "type": "module",
   "private": true,
   "scripts": {
@@ -12,6 +12,7 @@
     "lint:fix": "next lint --fix"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.112.3",
     "@workspace/audio-processing": "workspace:*",
     "@workspace/azkar": "workspace:*",
     "@workspace/lib": "workspace:*",
@@ -20,7 +21,8 @@
     "@workspace/ui": "workspace:*",
     "next": "16.1.6",
     "react": "^19.2.4",
-    "react-dom": "^19.2.4"
+    "react-dom": "^19.2.4",
+    "server-only": "^0.0.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.18",

@@ -1,10 +1,3 @@
-/**
- * apps/web/components/FloatingMiniBarWrapper.tsx
- *
- * Connects Next.js router + MicContext to the shared FloatingMiniBar UI.
- * Lives in layout.tsx alongside MicProvider.
- */
-
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";

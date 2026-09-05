@@ -1,16 +1,11 @@
-import "../../globals.css";
-import { Vazirmatn } from "next/font/google";
-import { Metadata } from "next";
-import { DynamicMetadata } from "@/components/DynamicMetadata";
-import { AppBootstrapper } from "@/components/AppBootstrapper";
-import { Providers } from "@/components/Providers";
-import { FloatingMiniBarWrapper } from "@/components/FloatingMiniBarWrapper";
+import type { Metadata } from "next";
+import { vazirmatn } from "@/lib/fonts";
+import { version } from "../../package.json";
+import { DynamicMetadata } from "@/features/zikr-app/components/DynamicMetadata";
+import { AppBootstrapper } from "@/features/zikr-app/components/AppBootstrapper";
+import { Providers } from "@/features/zikr-app/providers/Providers";
+import { FloatingMiniBarWrapper } from "@/features/zikr-app/components/FloatingMiniBarWrapper";
 import { DevAudioDebugger } from "@workspace/ui/components/DevAudioDebugger";
-
-const vazirmatn = Vazirmatn({
-  subsets: ["latin"],
-  variable: "--font-sans",
-});
 
 export const metadata: Metadata = {
   title: "Katheera - Web App",
@@ -29,16 +24,16 @@ export default function AppLayout({
       dir="rtl"
       className={`${vazirmatn.variable} mx-auto max-w-xs p-2 font-sans antialiased`}
     >
-      <AppBootstrapper />
       <Providers>
+        <AppBootstrapper />
         <DynamicMetadata />
         {children}
-        <DevAudioDebugger
-          apiKey={process.env.NEXT_PUBLIC_EDGE_IMPULSE_API_KEY}
-        />
+        {process.env.NODE_ENV === "development" && (
+          <DevAudioDebugger apiKey={process.env.EDGE_IMPULSE_API_KEY} />
+        )}
         <FloatingMiniBarWrapper />
         <p className="text-muted-foreground absolute bottom-4 left-1/2 -translate-x-1/2 text-center text-xs">
-          v0.1.0-beta.2
+          v{version}
         </p>
       </Providers>
     </main>

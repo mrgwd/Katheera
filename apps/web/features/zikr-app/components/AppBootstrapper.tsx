@@ -1,16 +1,3 @@
-/**
- * AppBootstrapper.tsx
- *
- * Client component that runs once when the app first loads.
- * Responsible for:
- *   1. Registering the Service Worker (which starts caching model files)
- *   2. Kicking off model loading proactively — so by the time the user
- *      wants to use the mic, the model is already warm in memory.
- *
- * Renders nothing — purely a side-effect component.
- * Lives in layout.tsx so it runs on every page but mounts only once.
- */
-
 "use client";
 
 import { useEffect } from "react";

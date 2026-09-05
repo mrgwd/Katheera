@@ -5,7 +5,11 @@ import {
   COOLDOWN_MS,
   SAME_ZIKR_COOLDOWN_MS,
 } from "@workspace/audio-processing/constants";
-import { processAudio, resampleAudio } from "@workspace/audio-processing/utils";
+import {
+  processAudio,
+  processClassifierResult,
+  resampleAudio,
+} from "@workspace/audio-processing/utils";
 import { usePersistentMicrophone } from "./usePersistentMicrophone";
 import { Detections } from "@workspace/model/types";
 import {
@@ -77,8 +81,12 @@ export function useKeywordSpotting() {
         const result = currentClassifier.classify(scaledAudioData, true);
         if (!result?.results) return;
 
-        // Dispatch debug info
-        if (typeof window !== "undefined") {
+        // Dispatch debug info (dev only — the Array copies are expensive
+        // and no debugger listens in production).
+        if (
+          process.env.NODE_ENV === "development" &&
+          typeof window !== "undefined"
+        ) {
           window.dispatchEvent(
             new CustomEvent("debugAudioChunk", {
               detail: {
@@ -90,17 +98,11 @@ export function useKeywordSpotting() {
           );
         }
 
-        let maxConfidence = 0.4;
-        let detectedLabel: string | null = null;
-
-        result.results.forEach((r) => {
-          if (r.value > maxConfidence && r.value > confidenceThreshold) {
-            maxConfidence = r.value;
-            detectedLabel = r.label;
-          }
-        });
-
-        if (detectedLabel === null) return;
+        // Single shared detection policy with the extension
+        // (see processClassifierResult in audio-processing/utils).
+        const detection = processClassifierResult(result, confidenceThreshold);
+        if (detection === null) return;
+        const { label: detectedLabel, confidence: maxConfidence } = detection;
 
         const isNoise =
           detectedLabel === "noise" || detectedLabel === "unknown";
@@ -193,4 +195,3 @@ export function useKeywordSpotting() {
     resetCounters,
   } as const;
 }
-

@@ -3,11 +3,12 @@ import Link from "next/link";
 import Logo from "./Logo";
 import { usePathname } from "next/navigation";
 import { cn } from "@workspace/lib/utils";
+import { CONTACT_EMAIL } from "@/lib/site";
 import { buttonVariants } from "@workspace/ui/components/button";
 const links = [
   { href: "/", label: "Home" },
   { href: "/privacy", label: "Privacy" },
-  // { href: "/contribute", label: "Contribute" },
+  { href: "/contribute", label: "Contribute" },
 ];
 export default function Header() {
   const pathname = usePathname();
@@ -31,7 +32,7 @@ export default function Header() {
           ))}
         </ul>
         <Link
-          href=""
+          href={`mailto:${CONTACT_EMAIL}`}
           className={cn("underline", buttonVariants({ variant: "link" }))}
         >
           Contact

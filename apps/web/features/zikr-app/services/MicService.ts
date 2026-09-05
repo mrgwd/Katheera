@@ -1,11 +1,3 @@
-/**
- * apps/web/lib/MicService.ts
- * 
- * Singleton service that manages the microphone and audio pipeline
- * across route changes. This ensures the mic stays active when navigating
- * between pages in the Next.js app.
- */
-
 export class MicService {
   private static instance: MicService | null = null;
   
@@ -60,6 +52,11 @@ export class MicService {
       
       this.audioContext = new AudioCtor();
       console.log('MicService: AudioContext created');
+
+      // Autoplay policy can leave the context suspended — resume explicitly.
+      if (this.audioContext.state === "suspended") {
+        await this.audioContext.resume();
+      }
       
       // Load AudioWorklet processor
       await this.audioContext.audioWorklet.addModule(workletUrl);
@@ -105,9 +102,10 @@ export class MicService {
     }
     
     if (this.audioContext) {
-      this.audioContext.close();
+      const ctx = this.audioContext;
       this.audioContext = null;
-      console.log('MicService: AudioContext closed');
+      ctx.close().catch(() => {});
+      console.log('MicService: AudioContext closing');
     }
     
     if (this.mediaStream) {
