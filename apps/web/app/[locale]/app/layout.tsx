@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { vazirmatn } from "@/lib/fonts";
-import { version } from "../../package.json";
+import { version } from "../../../package.json";
 import { DynamicMetadata } from "@/features/zikr-app/components/DynamicMetadata";
 import { AppBootstrapper } from "@/features/zikr-app/components/AppBootstrapper";
 import { Providers } from "@/features/zikr-app/providers/Providers";

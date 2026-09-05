@@ -15,11 +15,13 @@
     "@supabase/supabase-js": "^2.112.3",
     "@workspace/audio-processing": "workspace:*",
     "@workspace/azkar": "workspace:*",
+    "@workspace/i18n": "workspace:*",
     "@workspace/lib": "workspace:*",
     "@workspace/model": "workspace:*",
     "@workspace/styles": "workspace:*",
     "@workspace/ui": "workspace:*",
     "next": "16.1.6",
+    "next-intl": "^4.14.2",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "server-only": "^0.0.1"
