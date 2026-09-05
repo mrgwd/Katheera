@@ -30,10 +30,44 @@ const isChromeExt = (): boolean => {
   return typeof c !== "undefined" && !!c.storage?.local;
 };
 
+function clampSetting(
+  value: unknown,
+  fallback: number,
+  min: number,
+  max: number,
+): number {
+  const num = typeof value === "number" ? value : Number(value);
+  if (!Number.isFinite(num)) return fallback;
+  return Math.min(max, Math.max(min, num));
+}
+
 function parseSettings(raw: string | null | undefined): AppSettings {
   if (!raw) return { ...DEFAULT_SETTINGS };
   try {
-    return { ...DEFAULT_SETTINGS, ...JSON.parse(raw) };
+    const parsed = JSON.parse(raw) as Partial<AppSettings>;
+    if (typeof parsed !== "object" || parsed === null) {
+      return { ...DEFAULT_SETTINGS };
+    }
+    return {
+      confidenceThreshold: clampSetting(
+        parsed.confidenceThreshold,
+        DEFAULT_SETTINGS.confidenceThreshold,
+        SETTINGS_RANGES.confidenceThreshold.min,
+        SETTINGS_RANGES.confidenceThreshold.max,
+      ),
+      targetRms: clampSetting(
+        parsed.targetRms,
+        DEFAULT_SETTINGS.targetRms,
+        SETTINGS_RANGES.targetRms.min,
+        SETTINGS_RANGES.targetRms.max,
+      ),
+      minRms: clampSetting(
+        parsed.minRms,
+        DEFAULT_SETTINGS.minRms,
+        SETTINGS_RANGES.minRms.min,
+        SETTINGS_RANGES.minRms.max,
+      ),
+    };
   } catch {
     return { ...DEFAULT_SETTINGS };
   }

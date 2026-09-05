@@ -17,6 +17,14 @@ const todayLocal = (): string => {
 
 const LAST_RESET_KEY = "lastResetDate";
 
+/** Coerce any stored value to a safe non-negative integer count. */
+const toCount = (raw: unknown): number => {
+  const num = typeof raw === "number" ? raw : Number(raw ?? 0);
+  return Number.isFinite(num) ? Math.max(0, Math.floor(num)) : 0;
+};
+
+const lastError = (): unknown => getChrome()?.runtime?.lastError;
+
 export const ensureDailyReset = (keys: ZikrKey[]): void => {
   if (!isBrowser()) return;
   try {
@@ -24,8 +32,6 @@ export const ensureDailyReset = (keys: ZikrKey[]): void => {
     const today = todayLocal();
     if (last !== today) {
       keys.forEach((k) => window.localStorage.setItem(k, "0"));
-      window.localStorage.setItem(LAST_RESET_KEY, today);
-    } else {
       window.localStorage.setItem(LAST_RESET_KEY, today);
     }
   } catch {}
@@ -35,9 +41,7 @@ export const getCounts = (keys: ZikrKey[]): Record<string, number> => {
   const out: Record<string, number> = {};
   if (!isBrowser()) return keys.reduce((acc, k) => ((acc[k] = 0), acc), out);
   keys.forEach((k) => {
-    const raw = window.localStorage.getItem(k);
-    const num = raw ? parseInt(raw, 10) : 0;
-    out[k] = Number.isFinite(num) ? num : 0;
+    out[k] = toCount(window.localStorage.getItem(k));
   });
   return out;
 };
@@ -51,10 +55,8 @@ export const setCount = (key: ZikrKey, value: number): void => {
 
 export const incrementCount = (key: ZikrKey, by: number = 1): number => {
   if (!isBrowser()) return 0;
-  const raw = window.localStorage.getItem(key);
-  const num = raw ? parseInt(raw, 10) : 0;
-  const current = Number.isFinite(num) ? num : 0;
-  const next = current + by;
+  const current = toCount(window.localStorage.getItem(key));
+  const next = Math.max(0, current + by);
   try {
     window.localStorage.setItem(key, String(next));
   } catch {}
@@ -75,6 +77,10 @@ export const ensureDailyResetAsync = async (keys: ZikrKey[]): Promise<void> => {
     return new Promise((resolve) => {
       const chromeAny = getChrome();
       chromeAny.storage.local.get([LAST_RESET_KEY, ...keys], (res: any) => {
+        if (lastError()) {
+          resolve();
+          return;
+        }
         const last: string | undefined = res[LAST_RESET_KEY];
         const today = todayLocal();
         if (last !== today) {
@@ -83,7 +89,7 @@ export const ensureDailyResetAsync = async (keys: ZikrKey[]): Promise<void> => {
           resetObj[LAST_RESET_KEY] = today;
           chromeAny.storage.local.set(resetObj, () => resolve());
         } else {
-          chromeAny.storage.local.set({ [LAST_RESET_KEY]: today }, () => resolve());
+          resolve();
         }
       });
     });
@@ -99,11 +105,15 @@ export const getCountsAsync = async (
     return new Promise((resolve) => {
       const chromeAny = getChrome();
       chromeAny.storage.local.get(keys, (res: any) => {
+        if (lastError()) {
+          keys.forEach((k) => (out[k] = 0));
+          resolve(out);
+          return;
+        }
         const fixes: Record<string, number> = {};
         keys.forEach((k) => {
           const raw = res[k];
-          const num = raw ? parseInt(String(raw), 10) : 0;
-          out[k] = Number.isFinite(num) ? num : 0;
+          out[k] = toCount(raw);
           if (typeof raw === "string") {
             fixes[k] = out[k];
           }
@@ -138,12 +148,14 @@ export const incrementCountAsync = async (
     const chromeAny = getChrome();
     const current = await new Promise<number>((resolve) => {
       chromeAny.storage.local.get([key], (res: any) => {
-        const raw = res[key];
-        const num = raw ? parseInt(String(raw), 10) : 0;
-        resolve(Number.isFinite(num) ? num : 0);
+        if (lastError()) {
+          resolve(0);
+          return;
+        }
+        resolve(toCount(res[key]));
       });
     });
-    const next = current + by;
+    const next = Math.max(0, current + by);
     await new Promise<void>((resolve) => {
       chromeAny.storage.local.set({ [key]: next }, () => resolve());
     });
@@ -162,7 +174,10 @@ export const subscribeCounts = (
     const out: Record<string, number> = {};
     Object.entries(changes).forEach(([k, v]) => {
       const nv: any = (v as any).newValue;
-      if (typeof nv === "number") out[k] = nv;
+      // Accept numbers and numeric strings (sync API writes strings).
+      const n =
+        typeof nv === "number" || typeof nv === "string" ? Number(nv) : NaN;
+      if (Number.isFinite(n)) out[k] = Math.max(0, Math.floor(n));
     });
     if (Object.keys(out).length > 0) cb(out);
   };

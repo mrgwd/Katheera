@@ -35,11 +35,17 @@
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.577 0.245 27.325);
 
+  --success: oklch(0.596 0.145 163.225);
+  --success-foreground: oklch(0.985 0 0);
+
+  --info: oklch(0.546 0.101 264.376);
+  --info-foreground: oklch(0.985 0 0);
+
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.145 0 0);
 
-  --radius: 1rem;
+  /* --radius: 1rem; */
   /* Premium rounded look */
   --font-vazirmatn: var(--font-vazirmatn);
 }
@@ -73,13 +79,19 @@
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
 
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  --radius-lg: var(--radius);
+  /* --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
-  --radius-sm: calc(var(--radius) - 4px);
+  --radius-sm: calc(var(--radius) - 4px); */
 
   --font-vazirmatn: var(--font-vazirmatn);
 
@@ -170,7 +182,7 @@
   --background: oklch(24.776% 0.00003 271.152);
   --foreground: oklch(0.985 0 0);
 
-  --card: oklch(0.145 0 0);
+  --card: oklch(26.862% 0.00003 271.152);
   --card-foreground: oklch(0.985 0 0);
 
   --popover: oklch(0.145 0 0);
@@ -188,12 +200,18 @@
   --accent: oklch(0.269 0 0);
   --accent-foreground: oklch(0.985 0 0);
 
-  --destructive: oklch(0.396 0.141 25.723);
+  --destructive: oklch(63.79% 0.18484 23.247);
   --destructive-foreground: oklch(0.637 0.237 25.331);
 
-  --border: oklch(0.269 0 0);
+  --success: oklch(52.217% 0.11196 162.63);
+  --success-foreground: oklch(0.985 0 0);
+
+  --info: oklch(0.623 0.131 264.052);
+  --info-foreground: oklch(0.985 0 0);
+
+  --border: oklch(32.504% 0.00004 271.152);
   --input: oklch(0.269 0 0);
-  --ring: oklch(0.869 0 0);
+  --ring: oklch(32.504% 0.00004 271.152);
 }
 
 @layer base {
@@ -208,11 +226,11 @@
 }
 
 .shimmer-even {
-  @apply before:animate-shimmer-a relative overflow-hidden before:absolute before:inset-0 before:-translate-x-full before:border-t before:border-rose-100/10 before:bg-linear-to-r before:from-transparent before:via-rose-100/10 before:to-transparent before:content-[''];
+  @apply before:animate-shimmer-a relative overflow-hidden before:absolute before:inset-0 before:-translate-x-full before:border-t before:border-rose-100/10 before:bg-linear-to-r before:from-transparent before:via-white before:to-transparent before:content-[''] dark:before:via-rose-100/10;
 }
 
 .shimmer-odd {
-  @apply before:animate-shimmer-b relative overflow-hidden before:absolute before:inset-0 before:-translate-x-full before:border-t before:border-rose-100/10 before:bg-linear-to-r before:from-transparent before:via-rose-100/10 before:to-transparent before:content-[''];
+  @apply before:animate-shimmer-b relative overflow-hidden before:absolute before:inset-0 before:-translate-x-full before:border-t before:border-rose-100/10 before:bg-linear-to-r before:from-transparent before:via-white before:to-transparent before:content-[''] dark:before:via-rose-100/10;
 }
 
 @media (hover: none) {
