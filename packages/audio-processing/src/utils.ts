@@ -1,5 +1,6 @@
 import {
   CONFIDENCE_THRESHOLD,
+  MIN_CONFIDENCE_SEED,
   MIN_RMS,
   TARGET_RMS,
   TARGET_SAMPLE_RATE,
@@ -15,6 +16,14 @@ export const resampleAudio = (
   toSampleRate: number = TARGET_SAMPLE_RATE,
 ) => {
   if (fromSampleRate === toSampleRate) return audioData;
+  if (
+    !Number.isFinite(fromSampleRate) ||
+    fromSampleRate <= 0 ||
+    !Number.isFinite(toSampleRate) ||
+    toSampleRate <= 0
+  ) {
+    return audioData;
+  }
   const sampleRateRatio = fromSampleRate / toSampleRate;
   const newLength = Math.round(audioData.length / sampleRateRatio);
   const result = new Float32Array(newLength);
@@ -35,9 +44,10 @@ export const resampleAudio = (
 export const processClassifierResult = (
   result: EdgeImpulseResult,
   confidenceThreshold: number = CONFIDENCE_THRESHOLD,
-  maxConfidence: number = 0.9,
-) => {
+  seed: number = MIN_CONFIDENCE_SEED,
+): { label: string; confidence: number } | null => {
   let detectedLabel: string | null = null;
+  let bestConfidence = seed;
 
   if (!result || !result.results) return null;
 
@@ -49,15 +59,16 @@ export const processClassifierResult = (
 
   result.results.forEach((prediction: EdgeImpulseResultItem) => {
     if (
-      prediction.value > maxConfidence &&
+      prediction.value > bestConfidence &&
       prediction.value > confidenceThreshold
     ) {
-      maxConfidence = prediction.value;
+      bestConfidence = prediction.value;
       detectedLabel = prediction.label;
     }
   });
 
-  return detectedLabel;
+  if (detectedLabel === null) return null;
+  return { label: detectedLabel, confidence: bestConfidence };
 };
 
 export const processAudio = (
@@ -83,8 +94,10 @@ export const normalizeAudio = (
   }
   const rms = Math.sqrt(sumSq / audioData.length);
 
-  // Below this = true silence, skip
-  if (rms < effectiveMinRms) return null;
+  // Below this = true silence, skip.
+  // Written as !(rms > min) so NaN (empty input) and rms === 0 with
+  // minRms === 0 both bail out instead of producing Infinity scale.
+  if (!(rms > effectiveMinRms)) return null;
 
   const out = new Float32Array(audioData.length);
   // Scale so RMS = effectiveTargetRms, then convert to int16 range

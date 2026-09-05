@@ -4,7 +4,9 @@
   "private": true,
   "exports": {
     "./constants": "./src/constants.ts",
-    "./utils": "./src/utils.ts"
+    "./utils": "./src/utils.ts",
+    "./wav": "./src/wav.ts",
+    "./edge-impulse": "./src/edge-impulse.ts"
   },
   "scripts": {
     "lint": "eslint . --max-warnings 0",
