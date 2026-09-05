@@ -1,17 +1,28 @@
 "use client";
-import Link from "next/link";
 import Logo from "./Logo";
-import { usePathname } from "next/navigation";
+import { Link, usePathname } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
+import { locales } from "@workspace/i18n/routing";
 import { cn } from "@workspace/lib/utils";
 import { CONTACT_EMAIL } from "@/lib/site";
-import { buttonVariants } from "@workspace/ui/components/button";
-const links = [
-  { href: "/", label: "Home" },
-  { href: "/privacy", label: "Privacy" },
-  { href: "/contribute", label: "Contribute" },
-];
+import { buttonVariants } from "@workspace/ui/components/button-variants";
+
+// next-intl's usePathname may include the locale prefix — strip it so the
+// active-link compare works in every locale.
+const localePrefixPattern = new RegExp(`^/(${locales.join("|")})(?=/|$)`);
+function unprefixed(pathname: string): string {
+  return pathname.replace(localePrefixPattern, "") || "/";
+}
+
 export default function Header() {
+  const t = useTranslations("marketing.header");
   const pathname = usePathname();
+  const active = unprefixed(pathname);
+  const links = [
+    { href: "/", label: t("home") },
+    { href: "/privacy", label: t("privacy") },
+    { href: "/contribute", label: t("contribute") },
+  ];
   return (
     <header>
       <nav className="layout flex items-center justify-between pt-12 pb-4">
@@ -23,7 +34,7 @@ export default function Header() {
                 href={link.href}
                 className={cn(
                   "font-medium",
-                  pathname === link.href ? "text-primary" : "text-neutral-400",
+                  active === link.href ? "text-primary" : "text-neutral-400",
                 )}
               >
                 {link.label}
@@ -35,7 +46,7 @@ export default function Header() {
           href={`mailto:${CONTACT_EMAIL}`}
           className={cn("underline", buttonVariants({ variant: "link" }))}
         >
-          Contact
+          {t("contact")}
         </Link>
       </nav>
     </header>

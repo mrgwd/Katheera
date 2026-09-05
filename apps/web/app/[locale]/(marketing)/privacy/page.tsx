@@ -1,54 +1,22 @@
-const sections = [
-  {
-    title: "Data Collection",
-    content:
-      "Katheera does not collect, store, transmit, or sell any personal data.",
-    list: [
-      "Personally identifiable information",
-      "Browsing history",
-      "Location data",
-      "Audio recordings",
-      "Usage analytics",
-      "Any other personal data",
-    ],
-    listLabel: "The extension does not collect:",
-  },
-  {
-    title: "Microphone Usage",
-    content:
-      "Katheera requires microphone access in order to detect spoken zikr phrases.",
-    list: [
-      "Audio is processed locally on the user's device",
-      "Audio is not recorded",
-      "Audio is not stored",
-      "Audio is never transmitted to any server",
-    ],
-    listLabel: "Important notes:",
-    note: "The detection is performed using a lightweight on-device AI model running entirely inside the browser.",
-  },
-  {
-    title: "Local Storage",
-    content:
-      "Katheera uses the browser's local storage to save zikr counters and user preferences. This data remains on the user's device and is never transmitted externally.",
-  },
-  {
-    title: "Third-Party Services",
-    content:
-      "Katheera does not use any third-party analytics services, tracking systems, or external APIs. All functionality runs locally within the browser.",
-  },
-  {
-    title: "Offline Functionality",
-    content:
-      "Katheera can operate without an internet connection. All detection and counting features work locally on the device.",
-  },
-  {
-    title: "Changes to This Privacy Policy",
-    content:
-      'This policy may be updated from time to time. Any updates will be posted on this page with a revised "Last updated" date.',
-  },
-];
+import { Link } from "@/i18n/navigation";
+import { getTranslations } from "next-intl/server";
 
-export default function Privacy() {
+// Sections are heterogeneous (some carry a list and/or note, others don't),
+// so the raw payload is read through this normalized shape instead of the
+// exact per-index catalog type.
+interface PrivacySection {
+  title: string;
+  content?: string;
+  listLabel?: string;
+  list?: string[];
+  note?: string;
+}
+
+export default async function Privacy() {
+  const t = await getTranslations("marketing.privacy");
+  const sections = t.raw("sections") as PrivacySection[];
+  const collectedItems = t.raw("collectedItems") as string[];
+  const notCollectedItems = t.raw("notCollectedItems") as string[];
   return (
     <div className="bg-background text-foreground min-h-screen">
       {/* <Navbar /> */}
@@ -60,19 +28,15 @@ export default function Privacy() {
           style={{ animationDelay: "100ms" }}
         >
           <p className="text-muted-foreground mb-3 text-sm">
-            Last updated: 2026
+            {t("lastUpdated")}
           </p>
           <h1 className="text-foreground mb-4 text-4xl font-bold tracking-tight">
-            Privacy Policy
+            {t("title")}
           </h1>
           <p className="text-muted-foreground leading-relaxed">
-            Katheera is a Chrome extension designed to help users perform zikr
-            (remembrance of Allah) by automatically detecting supported spoken
-            zikr phrases and counting them.{" "}
-            <span className="text-foreground font-medium">
-              Your privacy is extremely important to us.
-            </span>{" "}
-            This Privacy Policy explains how Katheera handles user data.
+            {t("introA")}{" "}
+            <span className="text-foreground font-medium">{t("introB")}</span>{" "}
+            {t("introC")}
           </p>
         </div>
 
@@ -118,7 +82,7 @@ export default function Privacy() {
               )}
 
               {section.note && (
-                <p className="text-muted-foreground/80 border-primary/30 mt-3 border-l-2 pl-4 text-sm leading-relaxed italic">
+                <p className="text-muted-foreground/80 border-primary/30 border-s-2 ps-4 text-sm leading-relaxed italic">
                   {section.note}
                 </p>
               )}
@@ -128,11 +92,10 @@ export default function Privacy() {
           {/* Contact */}
           <div>
             <h2 className="text-foreground mb-3 text-lg font-semibold">
-              Contact
+              {t("contactTitle")}
             </h2>
             <p className="text-muted-foreground leading-relaxed">
-              If you have questions about this Privacy Policy, you can contact
-              the developer at:{" "}
+              {t("contactBodyA")}{" "}
               <a
                 href="mailto:hi@mohamedramadan.dev"
                 className="text-primary underline-offset-4 transition-colors hover:underline"
@@ -151,47 +114,34 @@ export default function Privacy() {
               <span className="mt-0.5 text-xl">🎙️</span>
               <div>
                 <h2 className="text-foreground mb-1 text-lg font-semibold">
-                  Voice Contribution Program
+                  {t("contribTitle")}
                 </h2>
                 <p className="text-muted-foreground text-sm leading-relaxed">
-                  The{" "}
-                  <a
+                  {t("contribIntroA")}{" "}
+                  <Link
                     href="/contribute"
                     className="text-foreground underline-offset-4 hover:underline"
                   >
-                    /contribute
-                  </a>{" "}
-                  page is an{" "}
-                  <strong className="text-foreground">
-                    entirely separate, opt-in program
-                  </strong>{" "}
-                  and operates under a different data policy from the Katheera
-                  extension. Participation is voluntary and independent of using
-                  the extension.
+                    {t("contribLink")}
+                  </Link>{" "}
+                  {t("contribIntroB")}
                 </p>
               </div>
             </div>
 
             <div className="border-border mb-4 rounded-lg border bg-amber-50/60 p-4 dark:bg-amber-900/10">
               <p className="text-foreground text-sm font-medium">
-                ⚠️ Unlike the extension — which never sends audio to a server —
-                contributing explicitly uploads your voice recordings.
+                ⚠️ {t("contribWarn")}
               </p>
             </div>
 
             <div className="space-y-4 text-sm">
               <div>
                 <p className="text-foreground mb-1 font-medium">
-                  What is collected
+                  {t("collectedTitle")}
                 </p>
                 <ul className="text-muted-foreground space-y-1">
-                  {[
-                    "Raw audio recordings (your voice clips)",
-                    "The text prompt displayed during recording",
-                    "Tone variation instruction (e.g. quiet, fast)",
-                    "A random session identifier (UUID) generated in your browser — not linked to your identity",
-                    "Timestamp of submission",
-                  ].map((item) => (
+                  {collectedItems.map((item) => (
                     <li key={item} className="flex items-start gap-2">
                       <span className="bg-primary mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full" />
                       {item}
@@ -202,14 +152,10 @@ export default function Privacy() {
 
               <div>
                 <p className="text-foreground mb-1 font-medium">
-                  What is NOT collected
+                  {t("notCollectedTitle")}
                 </p>
                 <ul className="text-muted-foreground space-y-1">
-                  {[
-                    "No name, email, or account",
-                    "No device identifiers or IP address stored",
-                    "No browser fingerprinting",
-                  ].map((item) => (
+                  {notCollectedItems.map((item) => (
                     <li key={item} className="flex items-start gap-2">
                       <span className="bg-primary mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full" />
                       {item}
@@ -220,33 +166,26 @@ export default function Privacy() {
 
               <div>
                 <p className="text-foreground mb-1 font-medium">
-                  Storage & access
+                  {t("storageTitle")}
                 </p>
                 <p className="text-muted-foreground leading-relaxed">
-                  Audio files are stored in Supabase (encrypted at rest). Only
-                  the project maintainer can access them for review and model
-                  training. Files are retained indefinitely so that future
-                  improvements to the processing pipeline can be applied to past
-                  recordings.
+                  {t("storageBody")}
                 </p>
               </div>
 
               <div>
                 <p className="text-foreground mb-1 font-medium">
-                  Right to withdraw
+                  {t("withdrawTitle")}
                 </p>
                 <p className="text-muted-foreground leading-relaxed">
-                  Once submitted, recordings cannot be automatically deleted
-                  because they are anonymous. If you submitted recordings in
-                  error and want them removed, contact{" "}
+                  {t("withdrawBodyA")}{" "}
                   <a
                     href="mailto:hi@mohamedramadan.dev"
                     className="text-primary underline-offset-4 hover:underline"
                   >
                     hi@mohamedramadan.dev
                   </a>{" "}
-                  with your session's approximate date/time and we will do our
-                  best to locate and delete them.
+                  {t("withdrawBodyB")}
                 </p>
               </div>
             </div>

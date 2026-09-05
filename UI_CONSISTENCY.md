@@ -136,3 +136,8 @@ Severity: low. Flagged because it changes behavior slightly.
    template-literal ternaries — they ship both conflicting classes (e.g.
    `border-border` + `border-primary/40`) and leave the winner to source
    order.
+7. `buttonVariants()` is server-safe **only** via
+   `@workspace/ui/components/button-variants`. Never call it through the
+   `button` module (a client module — the client-reference proxy throws
+   at prerender and silently degrades the route to dynamic rendering).
+   The interactive `<Button>` stays imported from `button` as before.

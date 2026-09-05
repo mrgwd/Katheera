@@ -1,9 +1,11 @@
 "use client";
 
 import { cn } from "@workspace/lib/utils";
-import { buttonVariants } from "@workspace/ui/components/button";
+import { buttonVariants } from "@workspace/ui/components/button-variants";
 import { GITHUB_REPO_URL } from "@/lib/site";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
+import type { Messages } from "@workspace/i18n/messages/en";
 import {
   Accordion,
   AccordionContent,
@@ -11,58 +13,19 @@ import {
   AccordionTrigger,
 } from "@workspace/ui/components/accordion";
 
-const faqs = [
-  {
-    question: "Does Katheera record my voice?",
-    answer:
-      "No. Katheera processes all audio on your device using on-device AI. Your voice is never recorded, stored, or sent to external servers. Everything stays private and on your computer.",
-  },
-  {
-    question: "Does it work offline?",
-    answer:
-      "Yes! Katheera works completely offline. The AI model runs locally on your device, so you can count your zikr even without an internet connection.",
-  },
-  {
-    question: "What phrases are supported?",
-    answer:
-      "Currently, Katheera supports: Subhan'Allah (سبحان الله), Al-Hamdulillah (الحمد لله). We're continuously improving phrase recognition based on user feedback.",
-  },
-  {
-    question: "How accurate is the detection?",
-    answer:
-      "Katheera uses on-device AI for phrase detection. Accuracy improves over time as the model learns.",
-  },
-  {
-    question: "Is Katheera free?",
-    answer:
-      "Yes! Katheera is completely free to use. It's an open-source project built by the community for the community.",
-  },
-  {
-    question: "Can I sync my count across devices?",
-    answer:
-      "Currently, your count is stored locally in the extension. We might explore optional cloud sync features in the future for users who want to track their zikr across multiple devices.",
-  },
-  {
-    question: "Does it work in all languages?",
-    answer:
-      "Katheera currently focuses on Arabic zikr phrases. English transliterations are supported for better learning and accessibility.",
-  },
-  {
-    question: "What if it misdetects my speech?",
-    answer:
-      "If you experience accuracy issues, you can adjust microphone sensitivity settings. You can also provide feedback to help improve the model.",
-  },
-];
+type FaqItem = Messages["marketing"]["faq"]["items"][number];
 
 export function FAQ() {
+  const t = useTranslations("marketing.faq");
+  const faqs = t.raw("items") as FaqItem[];
   return (
     <section id="faq" className="space-y-6">
       <div className="mb-14 text-center">
         <p className="text-primary mb-3 text-xs font-semibold tracking-widest uppercase">
-          FAQ
+          {t("eyebrow")}
         </p>
         <h2 className="text-foreground text-4xl leading-tight font-black tracking-tight md:text-5xl">
-          Frequently Asked Questions
+          {t("title")}
         </h2>
       </div>
 
@@ -84,16 +47,13 @@ export function FAQ() {
       </Accordion>
 
       <div className="bg-primary/5 border-primary/20 space-y-3 rounded-2xl border p-8 text-center">
-        <p className="text-foreground font-semibold">Still have questions?</p>
-        <p className="text-foreground/70">
-          Feel free to open an issue on GitHub or reach out to the developer
-          directly.
-        </p>
+        <p className="text-foreground font-semibold">{t("stillTitle")}</p>
+        <p className="text-foreground/70">{t("stillBody")}</p>
         <Link
           href={GITHUB_REPO_URL}
           className={cn("px-8", buttonVariants({ variant: "default" }))}
         >
-          Contact
+          {t("contact")}
         </Link>
       </div>
     </section>

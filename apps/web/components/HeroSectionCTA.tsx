@@ -1,22 +1,22 @@
-"use client";
-
 import { cn } from "@workspace/lib/utils";
-import { buttonVariants } from "@workspace/ui/components/button";
+import { buttonVariants } from "@workspace/ui/components/button-variants";
 import { Chrome } from "@workspace/ui/index";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
+import { getTranslations } from "next-intl/server";
 
-export default function HeroSectionCTA() {
+export default async function HeroSectionCTA() {
+  const t = await getTranslations("marketing.hero");
   return (
     <div className="flex gap-2">
-      <Link
+      <a
         href="https://chromewebstore.google.com/detail/hajkcolmlblliodncplnekfjaonccifl"
         className={cn(
           "rounded-full! px-6!",
           buttonVariants({ variant: "default", size: "lg" }),
         )}
       >
-        <Chrome /> Get the extension
-      </Link>
+        <Chrome /> {t("ctaPrimary")}
+      </a>
 
       <Link
         href="/app"
@@ -25,7 +25,7 @@ export default function HeroSectionCTA() {
           buttonVariants({ variant: "secondary", size: "lg" }),
         )}
       >
-        Try it now
+        {t("ctaSecondary")}
       </Link>
     </div>
   );
