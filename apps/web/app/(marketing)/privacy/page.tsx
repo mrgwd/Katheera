@@ -141,6 +141,116 @@ export default function Privacy() {
               </a>
             </p>
           </div>
+
+          {/* Contributors section */}
+          <div
+            id="contributors"
+            className="border-border scroll-mt-20 rounded-xl border p-6"
+          >
+            <div className="mb-4 flex items-start gap-3">
+              <span className="mt-0.5 text-xl">🎙️</span>
+              <div>
+                <h2 className="text-foreground mb-1 text-lg font-semibold">
+                  Voice Contribution Program
+                </h2>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  The{" "}
+                  <a
+                    href="/contribute"
+                    className="text-foreground underline-offset-4 hover:underline"
+                  >
+                    /contribute
+                  </a>{" "}
+                  page is an{" "}
+                  <strong className="text-foreground">
+                    entirely separate, opt-in program
+                  </strong>{" "}
+                  and operates under a different data policy from the Katheera
+                  extension. Participation is voluntary and independent of using
+                  the extension.
+                </p>
+              </div>
+            </div>
+
+            <div className="border-border mb-4 rounded-lg border bg-amber-50/60 p-4 dark:bg-amber-900/10">
+              <p className="text-foreground text-sm font-medium">
+                ⚠️ Unlike the extension — which never sends audio to a server —
+                contributing explicitly uploads your voice recordings.
+              </p>
+            </div>
+
+            <div className="space-y-4 text-sm">
+              <div>
+                <p className="text-foreground mb-1 font-medium">
+                  What is collected
+                </p>
+                <ul className="text-muted-foreground space-y-1">
+                  {[
+                    "Raw audio recordings (your voice clips)",
+                    "The text prompt displayed during recording",
+                    "Tone variation instruction (e.g. quiet, fast)",
+                    "A random session identifier (UUID) generated in your browser — not linked to your identity",
+                    "Timestamp of submission",
+                  ].map((item) => (
+                    <li key={item} className="flex items-start gap-2">
+                      <span className="bg-primary mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div>
+                <p className="text-foreground mb-1 font-medium">
+                  What is NOT collected
+                </p>
+                <ul className="text-muted-foreground space-y-1">
+                  {[
+                    "No name, email, or account",
+                    "No device identifiers or IP address stored",
+                    "No browser fingerprinting",
+                  ].map((item) => (
+                    <li key={item} className="flex items-start gap-2">
+                      <span className="bg-primary mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div>
+                <p className="text-foreground mb-1 font-medium">
+                  Storage & access
+                </p>
+                <p className="text-muted-foreground leading-relaxed">
+                  Audio files are stored in Supabase (encrypted at rest). Only
+                  the project maintainer can access them for review and model
+                  training. Files are retained indefinitely so that future
+                  improvements to the processing pipeline can be applied to past
+                  recordings.
+                </p>
+              </div>
+
+              <div>
+                <p className="text-foreground mb-1 font-medium">
+                  Right to withdraw
+                </p>
+                <p className="text-muted-foreground leading-relaxed">
+                  Once submitted, recordings cannot be automatically deleted
+                  because they are anonymous. If you submitted recordings in
+                  error and want them removed, contact{" "}
+                  <a
+                    href="mailto:hi@mohamedramadan.dev"
+                    className="text-primary underline-offset-4 hover:underline"
+                  >
+                    hi@mohamedramadan.dev
+                  </a>{" "}
+                  with your session's approximate date/time and we will do our
+                  best to locate and delete them.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </main>
 
