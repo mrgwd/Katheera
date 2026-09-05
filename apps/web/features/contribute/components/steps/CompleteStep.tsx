@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@workspace/ui/components/button";
 import { Check, Share2 } from "@workspace/ui/index";
 
@@ -10,7 +11,10 @@ interface CompleteStepProps {
 }
 
 export function CompleteStep({ totalSubmitted, onContributeAgain }: CompleteStepProps) {
+  const t = useTranslations("contribute.complete");
   const [copied, setCopied] = useState(false);
+  // Static Arabic hadith above needs no gloss in ar — hidden when empty.
+  const translation = t("hadithTranslation");
 
   // Reset the "Copied!" confirmation after a beat.
   useEffect(() => {
@@ -20,7 +24,7 @@ export function CompleteStep({ totalSubmitted, onContributeAgain }: CompleteStep
   }, [copied]);
 
   const handleShare = async () => {
-    const text = `I just donated my voice to help Katheera — a free, on-device AI dhikr counter — become smarter. If you make dhikr, you can help too: https://katheera.mohamedramadan.dev/contribute`;
+    const text = t("shareText");
     if (navigator.share) {
       try {
         await navigator.share({ text });
@@ -43,26 +47,22 @@ export function CompleteStep({ totalSubmitted, onContributeAgain }: CompleteStep
       <div className="space-y-4">
         <div className="mx-auto text-6xl">🤍</div>
         <h2 className="text-foreground text-2xl font-bold">
-          بارك الله فيك — JazakAllah Khayran
+          {t("title")}
         </h2>
         <p className="text-muted-foreground text-base">
-          You submitted{" "}
-          <span className="text-foreground font-semibold">{totalSubmitted} voice samples</span>.
-          That's a real contribution to the model.
+          {t("submittedPrefix")}{" "}
+          <span className="text-foreground font-semibold">{t("count", { count: totalSubmitted })}</span>.{" "}
+          {t("submittedNote")}
         </p>
       </div>
 
       {/* Impact */}
-      <div className="border-brand/20 bg-brand/5 rounded-xl border p-6 text-left">
+      <div className="border-brand/20 bg-brand/5 rounded-xl border p-6 text-start">
         <p className="text-foreground mb-3 text-sm font-semibold">
-          What happens next?
+          {t("impactTitle")}
         </p>
         <ul className="text-muted-foreground space-y-2 text-sm">
-          {[
-            "Your recordings will be reviewed, then added to the training dataset.",
-            "The model will be retrained and released to all users.",
-            "Every extra dhikr counted by someone using this model — you helped make that happen.",
-          ].map((item) => (
+          {(t.raw("impacts") as string[]).map((item) => (
             <li key={item} className="flex items-start gap-2">
               <span className="bg-brand/70 mt-2 h-1.5 w-1.5 shrink-0 rounded-full" />
               {item}
@@ -81,8 +81,8 @@ export function CompleteStep({ totalSubmitted, onContributeAgain }: CompleteStep
           مَنْ دَلَّ عَلَى خَيْرٍ فَلَهُ مِثْلُ أَجْرِ فَاعِلِهِ
         </p>
         <p className="text-muted-foreground text-sm">
-          "Whoever points to something good gets a reward similar to the one who
-          does it." — Sahih Muslim
+          {translation && <>{translation} </>}
+          {t("hadithCite")}
         </p>
       </div>
 
@@ -95,11 +95,11 @@ export function CompleteStep({ totalSubmitted, onContributeAgain }: CompleteStep
         >
           {copied ? (
             <>
-              <Check /> Copied!
+              <Check /> {t("copied")}
             </>
           ) : (
             <>
-              <Share2 /> Share with others
+              <Share2 /> {t("share")}
             </>
           )}
         </Button>
@@ -109,7 +109,7 @@ export function CompleteStep({ totalSubmitted, onContributeAgain }: CompleteStep
           onClick={onContributeAgain}
           className="h-auto! w-full rounded-xl! px-6! py-3! text-sm font-medium"
         >
-          Contribute another session
+          {t("again")}
         </Button>
       </div>
     </div>

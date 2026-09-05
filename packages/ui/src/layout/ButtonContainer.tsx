@@ -1,5 +1,6 @@
 "use client";
 import { cn } from "@workspace/lib/utils";
+import { useTranslations } from "use-intl";
 import Decoration from "./Decoration";
 import MicIcon from "./MicIcon";
 
@@ -14,6 +15,7 @@ export default function ButtonContainer({
   isModelLoaded,
   onToggleListening,
 }: ButtonContainerProps) {
+  const t = useTranslations("app.mic");
   return (
     <div className="flex h-full flex-col items-center gap-4">
       <div className="relative h-full w-full">
@@ -28,7 +30,7 @@ export default function ButtonContainer({
         <button
           onClick={onToggleListening}
           disabled={!isModelLoaded}
-          aria-label={isListening ? "Stop listening" : "Start listening"}
+          aria-label={isListening ? t("stop") : t("start")}
           className={cn(
             "flex aspect-square h-full w-full items-center justify-center rounded-3xl bg-linear-0 from-transparent transition-all duration-500 ease-in-out hover:cursor-pointer",
             !isModelLoaded && "cursor-not-allowed opacity-50",

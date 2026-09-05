@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { ContributeAzkar } from "@workspace/azkar/constants";
 import {
   noisePhrases,
@@ -93,6 +94,7 @@ export function RecordingLoopStep({
   sessionId,
   onComplete,
 }: RecordingLoopStepProps) {
+  const t = useTranslations("contribute.recording");
   const [prompts, setPrompts] = useState<RecordingPrompt[]>(() => buildPromptQueue());
   const [currentIndex, setCurrentIndex] = useState(0);
   const [retakes, setRetakes] = useState(0);
@@ -157,11 +159,11 @@ export function RecordingLoopStep({
 
       // Milestone messages
       if (newTotal === Math.floor(total / 2)) {
-        setMilestoneMsg("Halfway there! 🌟 Keep going!");
+        setMilestoneMsg(t("milestoneHalf"));
       } else if (newTotal === total - 5) {
-        setMilestoneMsg("Last 5! You're almost done 💪");
+        setMilestoneMsg(t("milestoneLast5"));
       } else if (newTotal === total) {
-        setMilestoneMsg("That's all of them! 🎉");
+        setMilestoneMsg(t("milestoneAll"));
       }
 
       if (advanceTimerRef.current) clearTimeout(advanceTimerRef.current);
@@ -189,6 +191,7 @@ export function RecordingLoopStep({
     currentIndex,
     onComplete,
     resetUpload,
+    t,
   ]);
 
   const handleRetake = useCallback(() => {
@@ -219,7 +222,7 @@ export function RecordingLoopStep({
       <div className="space-y-2">
         <div className="flex items-center justify-between text-xs">
           <span className="text-muted-foreground">
-            {currentIndex + 1} of {total}
+            {t("progress", { current: currentIndex + 1, total })}
           </span>
           <span className="text-muted-foreground">{Math.round(progressPct)}%</span>
         </div>
@@ -245,7 +248,7 @@ export function RecordingLoopStep({
           {isZikr ? (
             <>
               <span className="bg-brand/10 text-brand rounded-full px-3 py-1 text-xs font-medium">
-                Zikr
+                {t("badgeZikr")}
               </span>
               {currentPrompt.toneVariation && (
                 <span className="bg-muted text-muted-foreground rounded-full px-3 py-1 text-xs">
@@ -256,11 +259,11 @@ export function RecordingLoopStep({
             </>
           ) : currentPrompt.kind === "open-prompt" ? (
             <span className="bg-muted text-muted-foreground rounded-full px-3 py-1 text-xs font-medium">
-              🎤 Free speech
+              {t("badgeOpen")}
             </span>
           ) : (
             <span className="bg-muted text-muted-foreground rounded-full px-3 py-1 text-xs font-medium">
-              📝 Read aloud
+              {t("badgeNoise")}
             </span>
           )}
         </div>
@@ -300,7 +303,7 @@ export function RecordingLoopStep({
         {isZikr || currentPrompt.kind === "noise-phrase" ? (
           <p className="text-muted-foreground mt-1 text-center text-xs">
             {currentPrompt.kind === "noise-phrase"
-              ? "Read naturally in your own accent/dialect — no need to be exact"
+              ? t("noiseHint")
               : ""}
           </p>
         ) : null}
@@ -339,7 +342,7 @@ export function RecordingLoopStep({
             {showSuccess && (
               <div className="animate-fade flex items-center justify-center gap-2 text-green-600 opacity-0 dark:text-green-400">
                 <Check className="h-5 w-5" />
-                <span className="text-sm font-medium">Uploaded!</span>
+                <span className="text-sm font-medium">{t("success")}</span>
               </div>
             )}
 
@@ -365,7 +368,7 @@ export function RecordingLoopStep({
                   disabled={uploadStatus === "uploading"}
                   className="h-auto! flex-1 rounded-xl! py-3! text-sm font-medium"
                 >
-                  Try again ({MAX_RETAKES - retakes} left)
+                  {t("tryAgain", { remaining: MAX_RETAKES - retakes })}
                 </Button>
               )}
               <Button
@@ -377,11 +380,11 @@ export function RecordingLoopStep({
                 {uploadStatus === "uploading" ? (
                   <>
                     <LoaderCircle className="size-4 animate-spin" />
-                    Uploading…
+                    {t("uploading")}
                   </>
                 ) : (
                   <>
-                    Use this <Check className="size-4" />
+                    {t("useThis")} <Check className="size-4" />
                   </>
                 )}
               </Button>
@@ -389,7 +392,7 @@ export function RecordingLoopStep({
 
             {uploadStatus === "error" && (
               <p className="text-center text-xs text-red-500">
-                Upload failed — tap "Use this" to retry
+                {t("uploadError")}
               </p>
             )}
           </div>
@@ -397,10 +400,10 @@ export function RecordingLoopStep({
 
         <p className="text-muted-foreground text-xs">
           {recorder.isRecording
-            ? "Recording… tap to stop"
+            ? t("hintRecording")
             : hasRecording
-              ? "Listen back, then decide"
-              : "Tap the mic to start recording"}
+              ? t("hintRecorded")
+              : t("hintIdle")}
         </p>
 
         {/* Skip */}
@@ -411,7 +414,7 @@ export function RecordingLoopStep({
             onClick={handleSkip}
             className="text-muted-foreground hover:text-foreground text-xs underline underline-offset-2"
           >
-            Skip this prompt
+            {t("skip")}
           </Button>
         )}
       </div>

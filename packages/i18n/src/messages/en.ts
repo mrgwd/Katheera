@@ -12,6 +12,179 @@ const en = {
     en: "English",
     ar: "العربية",
   },
+  app: {
+    meta: {
+      title: "Katheera - Web App",
+      description:
+        "A smart sebha that uses AI to count your zikr for you while you are working, studying, or focusing on something else. You say the zikr, and Katheera will count it for you.",
+    },
+    mic: {
+      start: "Start listening",
+      stop: "Stop listening",
+    },
+    title: {
+      listening: "Listening...",
+    },
+    floating: {
+      listening: "Listening",
+      stop: "Stop listening",
+    },
+    settings: {
+      toggle: "Settings",
+      darkMode: "Dark Mode",
+      confidence: "Confidence Threshold:",
+      confidenceTip:
+        "How confident the model must be before counting a zikr. Higher = fewer false positives but may miss soft speech.",
+      target: "Target Volume:",
+      targetTip:
+        "Loudness the audio is normalized to before the model runs. Lower values amplify quieter speech more.",
+      silence: "Silence Threshold:",
+      silenceTip:
+        "Audio frames quieter than this are treated as silence and skipped entirely.",
+    },
+    zikr: {
+      back: "Back",
+      notFound: "Not found",
+      descTemplate:
+        "Learn about {label} — meaning, sources, and repeated recitation with Katheera.",
+    },
+  },
+  contribute: {
+    meta: {
+      title: "Contribute — Katheera",
+      description:
+        "Help Katheera recognize more voices. Donate a few voice samples to train the AI model and earn ongoing rewards (sadaqah jariyah).",
+    },
+    steps: {
+      about: "About",
+      consent: "Consent",
+      micCheck: "Mic check",
+      recording: "Recording",
+      done: "Done",
+    },
+    landing: {
+      heroTitle: "Help Katheera hear every voice",
+      heroBody:
+        "Katheera's AI model was trained on a limited set of voices. To recognize azkar accurately — across accents, microphones, and environments — it needs to hear from people like you.",
+      warnTitle: "This page uploads your recordings",
+      warnBody:
+        "Unlike the Katheera extension — which processes audio entirely on-device and never sends anything to a server — this contribution page intentionally uploads your voice recordings to train the AI model. This is strictly opt-in.",
+      warnLink: "Read the full Contributor Privacy Notice →",
+      verseTranslation:
+        '"O you who have believed, remember Allah with much remembrance."',
+      verseCite: "— Surah Al-Ahzab 33:41",
+      cards: [
+        {
+          title: "Sadaqah Jariyah",
+          body: "Every person who uses Katheera to remember Allah — their extra dhikr flows back as ongoing reward to those who made it possible.",
+        },
+        {
+          title: "Sharing Good",
+          body: '"Whoever points to something good gets a reward similar to the one who does it." — The Prophet ﷺ',
+        },
+        {
+          title: "Katheeran",
+          body: "The name Katheera (كثيرًا) comes from Allah's command to make dhikr abundant. Your voice helps more people do exactly that.",
+        },
+      ],
+      todoTitle: "What this takes (~5 minutes)",
+      todos: [
+        "Say each of the three main azkar 6 times — each time in a slightly different way (quiet, fast, slow…)",
+        "Read ~10 everyday Arabic phrases to help the model learn what non-zikr speech sounds like",
+        "Each recording is short (~2 seconds), and you can replay and re-record before submitting",
+      ],
+      cta: "I want to contribute",
+    },
+    consent: {
+      title: "Before we start",
+      body: "Please confirm the following — all three are required.",
+      itemUpload:
+        "I understand my voice recordings will be uploaded to a server and stored for AI model training purposes.",
+      itemAnon:
+        "I understand this is anonymous — no personal information is collected alongside my recordings, and I can stop at any time.",
+      itemPolicy:
+        "I have read and agree to the <link>Contributor Privacy Notice</link>.",
+      cta: "Start Recording",
+      foot: "You can stop at any point — any recordings already submitted still count and help the model.",
+    },
+    mic: {
+      title: "Microphone check",
+      body: "We need microphone access to record your voice samples.",
+      waiting: "Waiting for microphone permission…",
+      waitingHint:
+        "Look for the permission prompt in your browser's address bar or a pop-up dialog.",
+      ready: "Microphone ready",
+      testLabel: "Say something to test your microphone:",
+      levelNone: "No sound detected",
+      levelOk: "Sound detected ✓",
+      levelLoud: "Loud — try speaking a bit softer",
+      cta: "My mic sounds good",
+      deniedTitle: "Microphone access denied",
+      deniedBody: "To contribute, please allow microphone access:",
+      deniedBullets: [
+        '• Click the 🔒 or 🎙️ icon in your browser\'s address bar',
+        '• Set Microphone to "Allow"',
+        "• Reload this page",
+      ],
+      deniedCta: "Reload and try again",
+      errorTitle: "Couldn't access microphone",
+      errorBody:
+        "Make sure no other app is using your microphone and try reloading.",
+    },
+    recording: {
+      progress: "{current} of {total}",
+      milestoneHalf: "Halfway there! 🌟 Keep going!",
+      milestoneLast5: "Last 5! You're almost done 💪",
+      milestoneAll: "That's all of them! 🎉",
+      badgeZikr: "Zikr",
+      badgeOpen: "🎤 Free speech",
+      badgeNoise: "📝 Read aloud",
+      noiseHint:
+        "Read naturally in your own accent/dialect — no need to be exact",
+      success: "Uploaded!",
+      tryAgain: "Try again ({remaining} left)",
+      useThis: "Use this",
+      uploading: "Uploading…",
+      uploadError: 'Upload failed — tap "Use this" to retry',
+      hintRecording: "Recording… tap to stop",
+      hintRecorded: "Listen back, then decide",
+      hintIdle: "Tap the mic to start recording",
+      skip: "Skip this prompt",
+    },
+    complete: {
+      title: "بارك الله فيك — JazakAllah Khayran",
+      submittedPrefix: "You submitted",
+      count: "{count, plural, one {# voice sample} other {# voice samples}}",
+      submittedNote: "That's a real contribution to the model.",
+      impactTitle: "What happens next?",
+      impacts: [
+        "Your recordings will be reviewed, then added to the training dataset.",
+        "The model will be retrained and released to all users.",
+        "Every extra dhikr counted by someone using this model — you helped make that happen.",
+      ],
+      hadithCite: "— Sahih Muslim",
+      hadithTranslation:
+        '"Whoever points to something good gets a reward similar to the one who does it."',
+      share: "Share with others",
+      copied: "Copied!",
+      again: "Contribute another session",
+      shareText:
+        "I just donated my voice to help Katheera — a free, on-device AI dhikr counter — become smarter. If you make dhikr, you can help too: https://katheera.mohamedramadan.dev/contribute",
+    },
+  },
+  errors: {
+    notFound: {
+      title: "Page not found",
+      body: "The page you are looking for doesn't exist or was moved.",
+      home: "Back home",
+    },
+    error: {
+      title: "Something went wrong",
+      body: "Please try again — if the problem persists, let us know.",
+      retry: "Try again",
+      home: "Back home",
+    },
+  },
   marketing: {
     common: {
       logoAlt: "Katheera logo",

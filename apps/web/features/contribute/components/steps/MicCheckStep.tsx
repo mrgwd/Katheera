@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@workspace/ui/components/button";
 import { ArrowRight, Check } from "@workspace/ui/index";
 
@@ -11,6 +12,7 @@ interface MicCheckStepProps {
 type MicState = "requesting" | "ready" | "denied" | "error";
 
 export function MicCheckStep({ onReady }: MicCheckStepProps) {
+  const t = useTranslations("contribute.mic");
   const [micState, setMicState] = useState<MicState>("requesting");
   const [level, setLevel] = useState(0); // 0–1 RMS level
   const streamRef = useRef<MediaStream | null>(null);
@@ -133,9 +135,9 @@ export function MicCheckStep({ onReady }: MicCheckStepProps) {
     <div className="animate-fade space-y-8 text-center opacity-0">
       <div className="space-y-2">
         <div className="mx-auto mb-4 text-4xl">🎤</div>
-        <h2 className="text-foreground text-2xl font-bold">Microphone check</h2>
+        <h2 className="text-foreground text-2xl font-bold">{t("title")}</h2>
         <p className="text-muted-foreground text-sm">
-          We need microphone access to record your voice samples.
+          {t("body")}
         </p>
       </div>
 
@@ -148,12 +150,11 @@ export function MicCheckStep({ onReady }: MicCheckStepProps) {
               <div className="h-2 w-2 animate-bounce rounded-full bg-amber-500 [animation-delay:300ms]" />
             </div>
             <p className="text-muted-foreground mt-3 text-sm">
-              Waiting for microphone permission…
+              {t("waiting")}
             </p>
           </div>
           <p className="text-muted-foreground text-xs">
-            Look for the permission prompt in your browser's address bar or a
-            pop-up dialog.
+            {t("waitingHint")}
           </p>
         </div>
       )}
@@ -163,13 +164,13 @@ export function MicCheckStep({ onReady }: MicCheckStepProps) {
           <div className="border-border bg-muted/40 mx-auto max-w-sm space-y-4 rounded-xl border p-6">
             <div className="flex items-center justify-center gap-2 text-green-600 dark:text-green-400">
               <Check className="h-5 w-5" />
-              <p className="text-sm font-semibold">Microphone ready</p>
+              <p className="text-sm font-semibold">{t("ready")}</p>
             </div>
 
             {/* Level meter */}
             <div>
               <p className="text-muted-foreground mb-2 text-xs">
-                Say something to test your microphone:
+                {t("testLabel")}
               </p>
               <div className="bg-muted h-3 overflow-hidden rounded-full">
                 <div
@@ -182,10 +183,10 @@ export function MicCheckStep({ onReady }: MicCheckStepProps) {
               </div>
               <p className="text-muted-foreground mt-1 text-xs">
                 {level < 0.05
-                  ? "No sound detected"
+                  ? t("levelNone")
                   : level < 0.4
-                    ? "Sound detected ✓"
-                    : "Loud — try speaking a bit softer"}
+                    ? t("levelOk")
+                    : t("levelLoud")}
               </p>
             </div>
             <Button
@@ -193,7 +194,7 @@ export function MicCheckStep({ onReady }: MicCheckStepProps) {
               onClick={handleContinue}
               className="w-full hover:scale-[1.01] active:scale-[0.99]"
             >
-              My mic sounds good <ArrowRight />
+              {t("cta")} <ArrowRight className="rtl:scale-x-[-1]" />
             </Button>
           </div>
         </div>
@@ -203,15 +204,15 @@ export function MicCheckStep({ onReady }: MicCheckStepProps) {
         <div className="mx-auto max-w-sm space-y-4">
           <div className="rounded-xl border border-red-300/40 bg-red-50/60 p-5 dark:bg-red-900/10">
             <p className="text-foreground mb-2 text-sm font-semibold">
-              Microphone access denied
+              {t("deniedTitle")}
             </p>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              To contribute, please allow microphone access:
+              {t("deniedBody")}
             </p>
             <ul className="text-muted-foreground mt-2 space-y-1 text-sm">
-              <li>• Click the 🔒 or 🎙️ icon in your browser's address bar</li>
-              <li>• Set Microphone to "Allow"</li>
-              <li>• Reload this page</li>
+              {(t.raw("deniedBullets") as string[]).map((item) => (
+                <li key={item}>{item}</li>
+              ))}
             </ul>
           </div>
           <Button
@@ -219,19 +220,19 @@ export function MicCheckStep({ onReady }: MicCheckStepProps) {
             onClick={() => window.location.reload()}
             className="mx-auto block h-auto! rounded-xl! px-6! py-3! text-sm font-semibold"
           >
-            Reload and try again
+            {t("deniedCta")}
           </Button>
         </div>
       )}
 
       {micState === "error" && (
         <div className="mx-auto max-w-sm rounded-xl border border-red-300/40 bg-red-50/60 p-5 dark:bg-red-900/10">
-          <p className="text-foreground mb-2 text-sm font-semibold">
-            Couldn't access microphone
-          </p>
-          <p className="text-muted-foreground text-sm">
-            Make sure no other app is using your microphone and try reloading.
-          </p>
+            <p className="text-foreground mb-2 text-sm font-semibold">
+              {t("errorTitle")}
+            </p>
+            <p className="text-muted-foreground text-sm">
+              {t("errorBody")}
+            </p>
         </div>
       )}
     </div>

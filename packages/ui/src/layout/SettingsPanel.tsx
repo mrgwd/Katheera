@@ -1,5 +1,6 @@
 "use client";
 import { cn } from "@workspace/lib/utils";
+import { useTranslations } from "use-intl";
 import { Button } from "../components/button";
 import { useEffect, useRef, useState } from "react";
 import { useSettings } from "../hooks/useSettings";
@@ -14,6 +15,7 @@ import { Label } from "../components/label";
 export default function SettingsPanel() {
   const [isOpen, setIsOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
+  const t = useTranslations("app.settings");
   const handleToggle = () => setIsOpen((prev) => !prev);
 
   useEffect(() => {
@@ -45,6 +47,7 @@ export default function SettingsPanel() {
       <Button
         variant="ghost"
         onClick={handleToggle}
+        aria-label={t("toggle")}
         className="hover:bg-background rounded-xl"
       >
         {isOpen ? <X /> : <Settings />}
@@ -83,6 +86,7 @@ function formatMinRms(value: number): string {
 
 const SettingsContent = ({ isOpen }: { isOpen: boolean }) => {
   const { settings, updateSetting } = useSettings();
+  const t = useTranslations("app.settings");
 
   const confRange = SETTINGS_RANGES["confidenceThreshold"];
   const targetRmsRange = SETTINGS_RANGES["targetRms"];
@@ -102,6 +106,8 @@ const SettingsContent = ({ isOpen }: { isOpen: boolean }) => {
 
   return (
     <div
+      // Numeric control panel — intentionally LTR in every locale so
+      // sliders, values, and tooltips keep one stable layout.
       dir="ltr"
       className={cn(
         "h-54 w-full space-y-4 overflow-x-hidden overflow-y-auto p-2 transition-opacity duration-300 sm:h-61 sm:w-75 sm:p-4 sm:text-sm",
@@ -110,7 +116,7 @@ const SettingsContent = ({ isOpen }: { isOpen: boolean }) => {
     >
       <div className="flex justify-between">
         <Label htmlFor="dark-mode" className="max-sm:text-xs!">
-          Dark Mode
+          {t("darkMode")}
         </Label>
         {mounted && (
           <Switch
@@ -129,8 +135,8 @@ const SettingsContent = ({ isOpen }: { isOpen: boolean }) => {
         <div className="space-y-3">
           <div className="flex items-center justify-between gap-1.5">
             <p className="font-medium">
-              <span className="blobk">Confidence Threshold: </span>
-              <span className="text-muted-foreground ml-1 font-mono">
+              <span className="blobk">{t("confidence")} </span>
+              <span className="text-muted-foreground ms-1 font-mono">
                 {confidenceThreshold.toFixed(2)}
               </span>
             </p>
@@ -143,8 +149,7 @@ const SettingsContent = ({ isOpen }: { isOpen: boolean }) => {
                 }
               />
               <TooltipContent side="top" className="max-w-[14rem] leading-snug">
-                How confident the model must be before counting a zikr. Higher =
-                fewer false positives but may miss soft speech.
+                {t("confidenceTip")}
               </TooltipContent>
             </Tooltip>
           </div>
@@ -165,8 +170,8 @@ const SettingsContent = ({ isOpen }: { isOpen: boolean }) => {
         <div className="space-y-3">
           <div className="flex items-center justify-between gap-1.5">
             <p className="font-medium">
-              Target Volume:{" "}
-              <span className="text-muted-foreground ml-1 font-mono">
+              {t("target")}{" "}
+              <span className="text-muted-foreground ms-1 font-mono">
                 {targetRms.toFixed(2)}
               </span>
             </p>
@@ -179,8 +184,7 @@ const SettingsContent = ({ isOpen }: { isOpen: boolean }) => {
                 }
               />
               <TooltipContent side="top" className="max-w-[14rem] leading-snug">
-                Loudness the audio is normalized to before the model runs. Lower
-                values amplify quieter speech more.
+                {t("targetTip")}
               </TooltipContent>
             </Tooltip>
           </div>
@@ -202,8 +206,8 @@ const SettingsContent = ({ isOpen }: { isOpen: boolean }) => {
         <div className="space-y-3">
           <div className="flex items-center justify-between gap-1.5">
             <p className="font-medium">
-              Silence Threshold:{" "}
-              <span className="text-muted-foreground ml-1 font-mono">
+              {t("silence")}{" "}
+              <span className="text-muted-foreground ms-1 font-mono">
                 {formatMinRms(minRms)}
               </span>
             </p>
@@ -216,8 +220,7 @@ const SettingsContent = ({ isOpen }: { isOpen: boolean }) => {
                 }
               />
               <TooltipContent side="top" className="max-w-[14rem] leading-snug">
-                Audio frames quieter than this are treated as silence and
-                skipped entirely.
+                {t("silenceTip")}
               </TooltipContent>
             </Tooltip>
           </div>

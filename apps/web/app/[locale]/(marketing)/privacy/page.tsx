@@ -1,5 +1,6 @@
 import { Link } from "@/i18n/navigation";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { isLocale } from "@workspace/i18n/routing";
 
 // Sections are heterogeneous (some carry a list and/or note, others don't),
 // so the raw payload is read through this normalized shape instead of the
@@ -12,7 +13,14 @@ interface PrivacySection {
   note?: string;
 }
 
-export default async function Privacy() {
+export default async function Privacy({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  // See (marketing)/layout.tsx — re-asserted per segment for static rendering.
+  const { locale } = await params;
+  if (isLocale(locale)) setRequestLocale(locale);
   const t = await getTranslations("marketing.privacy");
   const sections = t.raw("sections") as PrivacySection[];
   const collectedItems = t.raw("collectedItems") as string[];

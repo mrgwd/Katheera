@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import { isLocale } from "@workspace/i18n/routing";
 import { vazirmatn } from "@/lib/fonts";
 import { version } from "../../../package.json";
 import { DynamicMetadata } from "@/features/zikr-app/components/DynamicMetadata";
@@ -7,11 +9,21 @@ import { Providers } from "@/features/zikr-app/providers/Providers";
 import { FloatingMiniBarWrapper } from "@/features/zikr-app/components/FloatingMiniBarWrapper";
 import { DevAudioDebugger } from "@workspace/ui/components/DevAudioDebugger";
 
-export const metadata: Metadata = {
-  title: "Katheera - Web App",
-  description:
-    "A smart sebha that uses AI to count your zikr for you while you are working, studying, or focusing on something else. You say the zikr, and Katheera will count it for you.",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({
+    locale: isLocale(locale) ? locale : "en",
+    namespace: "app.meta",
+  });
+  return {
+    title: t("title"),
+    description: t("description"),
+  };
+}
 
 export default function AppLayout({
   children,

@@ -17,7 +17,10 @@
  *   onStop          — called when user taps the stop button
  */
 
+"use client";
+
 import { useEffect, useRef } from "react";
+import { useTranslations } from "use-intl";
 import { Square } from "../index";
 
 interface FloatingMiniBarProps {
@@ -39,6 +42,9 @@ export function FloatingMiniBar({
 }: FloatingMiniBarProps) {
   const shouldShow = isListening && !isOnHome;
   const barRef = useRef<HTMLDivElement>(null);
+  // Shared catalog key — provided by the host app (next-intl on web,
+  // use-intl in the extension), so this component stays host-agnostic.
+  const t = useTranslations("app.floating");
 
   // Animate in/out
   useEffect(() => {
@@ -84,7 +90,7 @@ export function FloatingMiniBar({
             className="flex flex-col items-start text-right"
           >
             <span className="text-xs text-neutral-400">
-              {activeZikr ?? "جارٍ الاستماع"}
+              {activeZikr ?? t("listening")}
             </span>
             {count > 0 && (
               <span className="text-sm font-bold text-white">{count}</span>
@@ -100,7 +106,7 @@ export function FloatingMiniBar({
             onStop();
           }}
           className="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-700 text-neutral-300 transition hover:bg-red-500 hover:text-white"
-          aria-label="إيقاف الاستماع"
+          aria-label={t("stop")}
         >
           <Square className="size-3" fill="currentColor" />
         </button>

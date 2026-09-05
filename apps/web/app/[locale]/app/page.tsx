@@ -3,7 +3,7 @@ import { useMic } from "@/features/zikr-app/providers/MicProvider";
 import { TopBar } from "@workspace/ui/layout/TopBar";
 import ButtonContainer from "@workspace/ui/layout/ButtonContainer";
 import ZikrList from "@workspace/ui/layout/ZikrList";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 
 export default function Page() {
   const { isLoading, isListening, toggle, detections } = useMic();

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import { useTranslations } from "next-intl";
 import { cn } from "@workspace/lib/utils";
 import { Check } from "@workspace/ui/index";
 import type { ContributeStep } from "../types";
@@ -10,13 +11,22 @@ import { MicCheckStep } from "./steps/MicCheckStep";
 import { RecordingLoopStep } from "./steps/RecordingLoopStep";
 import { CompleteStep } from "./steps/CompleteStep";
 
-const STEP_LABELS: { id: ContributeStep; label: string }[] = [
-  { id: "landing", label: "About" },
-  { id: "consent", label: "Consent" },
-  { id: "mic-check", label: "Mic check" },
-  { id: "recording", label: "Recording" },
-  { id: "complete", label: "Done" },
+const STEP_IDS: ContributeStep[] = [
+  "landing",
+  "consent",
+  "mic-check",
+  "recording",
+  "complete",
 ];
+
+// Progress indicator shows the middle three steps. Catalog keys differ from
+// step ids in places (mic-check → micCheck), so the mapping is explicit —
+// this also keeps t() fully typed.
+const VISIBLE_STEPS = [
+  { id: "consent", labelKey: "consent" },
+  { id: "mic-check", labelKey: "micCheck" },
+  { id: "recording", labelKey: "recording" },
+] as const;
 
 function newSessionId(): string {
   try {
@@ -29,6 +39,7 @@ function newSessionId(): string {
 }
 
 export function ContributePage() {
+  const t = useTranslations("contribute.steps");
   const [step, setStep] = useState<ContributeStep>("landing");
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [totalSubmitted, setTotalSubmitted] = useState(0);
@@ -65,13 +76,11 @@ export function ContributePage() {
         {/* Step progress indicator */}
         {step !== "landing" && step !== "complete" && (
           <div className="mb-8 flex items-center justify-center gap-1 sm:gap-2">
-            {STEP_LABELS.filter(
-              (s) => s.id !== "landing" && s.id !== "complete",
-            ).map((s, i) => {
+            {VISIBLE_STEPS.map((s, i) => {
               const isActive = s.id === step;
               const isDone =
-                STEP_LABELS.findIndex((x) => x.id === step) >
-                STEP_LABELS.findIndex((x) => x.id === s.id);
+                STEP_IDS.findIndex((x) => x === step) >
+                STEP_IDS.findIndex((x) => x === s.id);
               return (
                 <div key={s.id} className="flex items-center gap-1 sm:gap-2">
                   <div className="flex items-center gap-1.5">
@@ -98,7 +107,7 @@ export function ContributePage() {
                           : "text-muted-foreground",
                       )}
                     >
-                      {s.label}
+                      {t(s.labelKey)}
                     </span>
                   </div>
                   {i < 2 && (

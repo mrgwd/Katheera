@@ -141,3 +141,14 @@ Severity: low. Flagged because it changes behavior slightly.
    `button` module (a client module — the client-reference proxy throws
    at prerender and silently degrades the route to dynamic rendering).
    The interactive `<Button>` stays imported from `button` as before.
+8. i18n static rendering: every server layout/page under `app/[locale]`
+   that (transitively) renders translated Server Components must call
+   `setRequestLocale(locale)` from its **own** `params` — the root locale
+   layout's call does not reliably propagate through route groups during
+   prerender (React `cache()` scope boundary; Turbopack-only, no warning).
+   Without it, inherited-locale `getTranslations()` reads `headers()` and
+   the route silently degrades to dynamic. Diagnose with
+   `export const dynamic = "error"` (names the API) — never ship
+   `force-static` (it masks real errors). Explicit-locale
+   `getTranslations({locale})` (metadata) is unaffected. Client components
+   need nothing (provider context).

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useTranslations } from "next-intl";
 import { useMic } from "../providers/MicProvider";
 
 const DEFAULT_FAVICON = "/favicon.ico";
@@ -24,6 +25,7 @@ function applyFavicon(href: string) {
 
 export function DynamicMetadata() {
   const mic = useMic();
+  const t = useTranslations("app.title");
   const originalTitleRef = useRef<string | null>(null);
   const activeCount = mic.activeZikr
     ? (mic.detections[mic.activeZikr]?.count ?? null)
@@ -54,7 +56,7 @@ export function DynamicMetadata() {
       document.title =
         label !== null && activeCount !== null
           ? `(${activeCount}) ${label}`
-          : `Listening... | ${original}`;
+          : `${t("listening")} | ${original}`;
     } else if (document.title !== original) {
       document.title = original;
     }
@@ -62,7 +64,7 @@ export function DynamicMetadata() {
     return () => {
       document.title = originalTitleRef.current ?? document.title;
     };
-  }, [mic.isListening, mic.activeZikr, activeCount]);
+  }, [mic.isListening, mic.activeZikr, activeCount, t]);
 
   return null; // This component doesn't render anything
 }
