@@ -31,6 +31,7 @@ const ar: Messages = {
     },
     settings: {
       toggle: "الإعدادات",
+      language: "اللغة",
       darkMode: "الوضع الداكن",
       confidence: "عتبة الثقة:",
       confidenceTip:
@@ -182,6 +183,15 @@ const ar: Messages = {
       body: "حاول مجددًا — إذا استمرت المشكلة، أخبرنا.",
       retry: "حاول مجددًا",
       home: "عودة للرئيسية",
+    },
+  },
+  extension: {
+    status: {
+      idle: "اضغط الزر للتفعيل.",
+      running: "الميكروفون يعمل في الخلفية.",
+      stopped: "توقف الميكروفون.",
+      error: "خطأ: {message}",
+      permError: "خطأ في التحقق من الإذن: {message}",
     },
   },
   marketing: {

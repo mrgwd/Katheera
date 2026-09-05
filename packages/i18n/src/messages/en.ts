@@ -31,6 +31,7 @@ const en = {
     },
     settings: {
       toggle: "Settings",
+      language: "Language",
       darkMode: "Dark Mode",
       confidence: "Confidence Threshold:",
       confidenceTip:
@@ -183,6 +184,15 @@ const en = {
       body: "Please try again — if the problem persists, let us know.",
       retry: "Try again",
       home: "Back home",
+    },
+  },
+  extension: {
+    status: {
+      idle: "Click the button to activate.",
+      running: "Mic is running in the background (offscreen).",
+      stopped: "Mic stopped.",
+      error: "Error: {message}",
+      permError: "Error checking permission: {message}",
     },
   },
   marketing: {

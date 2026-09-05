@@ -1,16 +1,20 @@
 // ─── Types & defaults ────────────────────────────────────────────────────────
 
+import type { Locale } from "@workspace/i18n/routing";
+import { defaultLocale, isLocale } from "@workspace/i18n/routing";
+
 export interface AppSettings {
   confidenceThreshold: number; // 0.5 – 0.99
   targetRms: number; // 0.05 – 0.30
   minRms: number; // 0.00001 – 0.001
-  // language: string; // reserved — hidden until i18n is added
+  language: Locale; // UI locale, persisted for the extension popup
 }
 
 export const DEFAULT_SETTINGS: AppSettings = {
   confidenceThreshold: 0.9,
   targetRms: 0.15,
   minRms: 0.0001,
+  language: defaultLocale,
 };
 
 export const SETTINGS_RANGES = {
@@ -67,6 +71,9 @@ function parseSettings(raw: string | null | undefined): AppSettings {
         SETTINGS_RANGES.minRms.min,
         SETTINGS_RANGES.minRms.max,
       ),
+      language: isLocale(parsed.language)
+        ? parsed.language
+        : DEFAULT_SETTINGS.language,
     };
   } catch {
     return { ...DEFAULT_SETTINGS };

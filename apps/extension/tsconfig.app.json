@@ -29,6 +29,7 @@
     "paths": {
       "@workspace/*": ["../../packages/*"],
       "@workspace/ui/*": ["../../packages/ui/src/*"],
+      "@workspace/i18n/*": ["../../packages/i18n/src/*"],
       "@workspace/model/*": ["../../packages/model/src/*"],
       "@workspace/audio-processing/*": [
         "../../packages/audio-processing/src/*",

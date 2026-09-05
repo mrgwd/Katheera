@@ -267,6 +267,9 @@ importers:
       '@workspace/azkar':
         specifier: workspace:*
         version: link:../azkar
+      '@workspace/i18n':
+        specifier: workspace:*
+        version: link:../i18n
       '@workspace/model':
         specifier: workspace:*
         version: link:../model

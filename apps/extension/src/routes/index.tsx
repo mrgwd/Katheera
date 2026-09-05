@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslations } from "use-intl";
 import type { Detections } from "@workspace/model/types";
 import ButtonContainer from "@workspace/ui/layout/ButtonContainer";
 import { getAzkarKeys } from "@workspace/azkar/constants";
@@ -12,6 +13,7 @@ import {
 import { createFileRoute, Link } from "@tanstack/react-router";
 import ZikrList from "@workspace/ui/layout/ZikrList";
 import { TopBar } from "@workspace/ui/layout/TopBar";
+import { LanguageSelect } from "../components/LanguageSelect";
 import { ext } from "../utils/browser";
 
 type BackgroundResponse = {
@@ -25,11 +27,12 @@ export const Route = createFileRoute("/")({
 });
 
 function App() {
+  const t = useTranslations("extension.status");
   const [counts, setCounts] = useState<Detections>(
     buildInitialDetections() as Detections,
   );
   const [isActive, setIsActive] = useState(false);
-  const [status, setStatus] = useState("Click the button to activate.");
+  const [status, setStatus] = useState(t("idle"));
 
   useEffect(() => {
     const keys = getAzkarKeys();
@@ -66,13 +69,14 @@ function App() {
         })) as BackgroundResponse | undefined;
         if (response?.isActive) {
           setIsActive(true);
-          setStatus("Mic is running in the background (offscreen).");
+          setStatus(t("running"));
         }
       } catch (err) {
         console.error("Failed to check mic status:", err);
       }
     })();
-  }, []);
+    // Re-runs on locale switch so a visible status line retranslates.
+  }, [t]);
 
   const handleStartMic = async () => {
     try {
@@ -87,7 +91,7 @@ function App() {
         window.close();
       }
     } catch (err) {
-      setStatus(`Error checking permission: ${(err as Error).message}`);
+      setStatus(t("permError", { message: (err as Error).message }));
     }
   };
 
@@ -107,13 +111,13 @@ function App() {
       console.log("Mic started", response);
       if (response?.success) {
         setIsActive(true);
-        setStatus("Mic is running in the background (offscreen).");
+        setStatus(t("running"));
       } else if (response?.error) {
-        setStatus(`Error: ${response.error}`);
+        setStatus(t("error", { message: response.error }));
       }
     } catch (err) {
       console.error("Failed to start mic:", err);
-      setStatus(`Error: ${err instanceof Error ? err.message : String(err)}`);
+      setStatus(t("error", { message: err instanceof Error ? err.message : String(err) }));
     }
   };
 
@@ -125,13 +129,13 @@ function App() {
       console.log("Mic stopped", response);
       if (response?.success) {
         setIsActive(false);
-        setStatus("Mic stopped.");
+        setStatus(t("stopped"));
       } else if (response?.error) {
-        setStatus(`Error: ${response.error}`);
+        setStatus(t("error", { message: response.error }));
       }
     } catch (err) {
       console.error("Failed to stop mic:", err);
-      setStatus(`Error: ${err instanceof Error ? err.message : String(err)}`);
+      setStatus(t("error", { message: err instanceof Error ? err.message : String(err) }));
     }
   };
 
@@ -139,7 +143,7 @@ function App() {
     <div className="group text-center">
       {/* Shared square zone: mic button + settings panel */}
       <div className="relative aspect-square w-full">
-        <TopBar />
+        <TopBar localeSwitcher={<LanguageSelect />} />
         <div className="absolute inset-0">
           <ButtonContainer
             isListening={isActive}

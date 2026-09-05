@@ -12,7 +12,12 @@ import { Switch } from "../components/switch";
 import { useTheme } from "next-themes";
 import { Label } from "../components/label";
 
-export default function SettingsPanel() {
+export default function SettingsPanel({
+  localeSwitcher,
+}: {
+  /** Host-provided locale picker row (extension only). Hidden when absent. */
+  localeSwitcher?: React.ReactNode;
+}) {
   const [isOpen, setIsOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
   const t = useTranslations("app.settings");
@@ -52,7 +57,10 @@ export default function SettingsPanel() {
       >
         {isOpen ? <X /> : <Settings />}
       </Button>
-      <SettingsContent isOpen={isOpen} />
+      <SettingsContent
+        isOpen={isOpen}
+        localeSwitcher={localeSwitcher}
+      />
     </div>
   );
 }
@@ -84,7 +92,13 @@ function formatMinRms(value: number): string {
   return coeffStr === "1" ? `10${expStr}` : `${coeffStr}×10${expStr}`;
 }
 
-const SettingsContent = ({ isOpen }: { isOpen: boolean }) => {
+const SettingsContent = ({
+  isOpen,
+  localeSwitcher,
+}: {
+  isOpen: boolean;
+  localeSwitcher?: React.ReactNode;
+}) => {
   const { settings, updateSetting } = useSettings();
   const t = useTranslations("app.settings");
 
@@ -114,6 +128,12 @@ const SettingsContent = ({ isOpen }: { isOpen: boolean }) => {
         isOpen ? "opacity-100" : "pointer-events-none opacity-0!",
       )}
     >
+      {localeSwitcher && (
+        <div className="flex items-center justify-between gap-1.5">
+          <Label className="max-sm:text-xs!">{t("language")}</Label>
+          {localeSwitcher}
+        </div>
+      )}
       <div className="flex justify-between">
         <Label htmlFor="dark-mode" className="max-sm:text-xs!">
           {t("darkMode")}

@@ -2,6 +2,7 @@ import { createRootRoute, Outlet } from "@tanstack/react-router";
 import { ThemeProvider as NextThemesProvider } from "@workspace/ui/components/theme-provider";
 import { DevAudioDebugger } from "@workspace/ui/components/DevAudioDebugger";
 import { SettingsProvider } from "@workspace/ui/hooks/useSettings";
+import { LocaleProvider } from "../components/LocaleProvider";
 import { useEffect } from "react";
 import { ext } from "../utils/browser";
 // import { TooltipProvider } from "@workspace/ui/components/tooltip";
@@ -36,10 +37,12 @@ function RootComponent() {
     >
       {/* <TooltipProvider> */}
       <SettingsProvider>
-        <Outlet />
-        {import.meta.env.DEV && (
-          <DevAudioDebugger apiKey={import.meta.env.VITE_EDGE_IMPULSE_API_KEY} />
-        )}
+        <LocaleProvider>
+          <Outlet />
+          {import.meta.env.DEV && (
+            <DevAudioDebugger apiKey={import.meta.env.VITE_EDGE_IMPULSE_API_KEY} />
+          )}
+        </LocaleProvider>
       </SettingsProvider>
       {/* </TooltipProvider> */}
     </NextThemesProvider>
