@@ -156,5 +156,9 @@ Severity: low. Flagged because it changes behavior slightly.
    mirror (e.g. switch-thumb `translate-x` on checked). The flex row
    mirrors automatically but the transform does not — without the mirror
    the thumb exits the track in RTL. Base-UI direction-aware parts
-   (slider) additionally need an explicit `DirectionProvider`, which does
-   not read `document.dir` on its own.
+   (slider, accordion root `dir`, popup placement) additionally need an
+   explicit `DirectionProvider`, which does not read `document.dir` on its
+   own and defaults to LTR. Provide it once per host (web
+   `[locale]/layout.tsx`, extension `LocaleProvider`) via the shared
+   `@workspace/ui/components/direction-provider` — never per-instance
+   `dir=` overrides.

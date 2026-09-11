@@ -12,7 +12,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@workspace/ui/components/accordion";
-
 type FaqItem = Messages["marketing"]["faq"]["items"][number];
 
 export function FAQ() {

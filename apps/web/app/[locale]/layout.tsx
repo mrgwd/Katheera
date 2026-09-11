@@ -2,13 +2,18 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
-import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
+import {
+  getMessages,
+  getTranslations,
+  setRequestLocale,
+} from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { isLocale, localeDir, type Locale } from "@workspace/i18n/routing";
 import { SITE_URL } from "@/lib/site";
 import "../../globals.css";
 import { vazirmatn } from "@/lib/fonts";
 import { ThemeProvider as NextThemesProvider } from "@workspace/ui/components/theme-provider";
+import { DirectionProvider } from "@workspace/ui/components/direction-provider";
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -52,15 +57,20 @@ export default async function LocaleLayout({
     <html lang={locale} dir={localeDir(locale)} suppressHydrationWarning>
       <body className={`${vazirmatn.variable} font-sans antialiased`}>
         <NextIntlClientProvider messages={messages}>
-          <NextThemesProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-            enableColorScheme
-          >
-            {children}
-          </NextThemesProvider>
+          {/* Single direction source for all Base-UI components: without
+              this they default to LTR (some even render dir="ltr", e.g.
+              Accordion root) regardless of document direction. */}
+          <DirectionProvider direction={localeDir(locale)}>
+            <NextThemesProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+              enableColorScheme
+            >
+              {children}
+            </NextThemesProvider>
+          </DirectionProvider>
         </NextIntlClientProvider>
       </body>
     </html>

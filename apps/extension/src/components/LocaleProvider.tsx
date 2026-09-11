@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import type { ReactNode } from "react";
 import { IntlProvider } from "use-intl";
+import { DirectionProvider } from "@workspace/ui/components/direction-provider";
 import { useSettings } from "@workspace/ui/hooks/useSettings";
 import { localeDir, type Locale } from "@workspace/i18n/routing";
 import type { Messages } from "@workspace/i18n/messages/en";
@@ -32,7 +33,11 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
 
   return (
     <IntlProvider locale={locale} messages={catalogs[locale]}>
-      {children}
+      {/* Single direction source for all Base-UI components (see web
+          [locale]/layout.tsx) — they default to LTR without it. */}
+      <DirectionProvider direction={localeDir(locale)}>
+        {children}
+      </DirectionProvider>
     </IntlProvider>
   );
 }

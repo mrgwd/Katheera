@@ -1,7 +1,6 @@
 "use client";
 import { cn } from "@workspace/lib/utils";
 import { useLocale, useTranslations } from "use-intl";
-import { DirectionProvider } from "@base-ui/react/direction-provider";
 import { localeDir } from "@workspace/i18n/routing";
 import { Button } from "../components/button";
 import { useEffect, useRef, useState } from "react";
@@ -113,8 +112,9 @@ const SettingsContent = ({
 }) => {
   const { settings, updateSetting } = useSettings();
   const t = useTranslations("app.settings");
-  // Panel follows the document direction (Base-UI sliders/switches mirror
-  // via DirectionProvider, which does not read document.dir on its own).
+  // Panel direction follows the locale (the global DirectionProvider in
+  // each host handles the Base-UI direction context; the dir attribute
+  // here drives CSS logical props and rtl: variants).
   const dir = localeDir(useLocale());
 
   const confRange = SETTINGS_RANGES["confidenceThreshold"];
@@ -141,7 +141,6 @@ const SettingsContent = ({
         isOpen ? "opacity-100" : "pointer-events-none opacity-0!",
       )}
     >
-      <DirectionProvider direction={dir}>
       {localeSwitcher && (
         <div className="flex items-center justify-between gap-1.5">
           <Label className="max-sm:text-xs!">{t("language")}</Label>
@@ -272,7 +271,6 @@ const SettingsContent = ({
           />
         </div>
       </div>
-      </DirectionProvider>
     </div>
   );
 };
