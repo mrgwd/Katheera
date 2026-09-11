@@ -26,7 +26,13 @@ export function LanguageSelect() {
       <SelectTrigger size="sm">
         <SelectValue />
       </SelectTrigger>
-      <SelectContent>
+      {/* Edge-aligned (not selected-item-aligned): the popup viewport is
+          ~240px wide and selected-item alignment math misbehaves there. */}
+      <SelectContent
+        side="bottom"
+        align="start"
+        alignItemWithTrigger={false}
+      >
         {locales.map((code) => (
           <SelectItem key={code} value={code}>
             {t(code)}

@@ -1,6 +1,8 @@
 "use client";
 import { cn } from "@workspace/lib/utils";
-import { useTranslations } from "use-intl";
+import { useLocale, useTranslations } from "use-intl";
+import { DirectionProvider } from "@base-ui/react/direction-provider";
+import { localeDir } from "@workspace/i18n/routing";
 import { Button } from "../components/button";
 import { useEffect, useRef, useState } from "react";
 import { useSettings } from "../hooks/useSettings";
@@ -111,6 +113,9 @@ const SettingsContent = ({
 }) => {
   const { settings, updateSetting } = useSettings();
   const t = useTranslations("app.settings");
+  // Panel follows the document direction (Base-UI sliders/switches mirror
+  // via DirectionProvider, which does not read document.dir on its own).
+  const dir = localeDir(useLocale());
 
   const confRange = SETTINGS_RANGES["confidenceThreshold"];
   const targetRmsRange = SETTINGS_RANGES["targetRms"];
@@ -130,14 +135,13 @@ const SettingsContent = ({
 
   return (
     <div
-      // Numeric control panel — intentionally LTR in every locale so
-      // sliders, values, and tooltips keep one stable layout.
-      dir="ltr"
+      dir={dir}
       className={cn(
         "h-54 w-full space-y-4 overflow-x-hidden overflow-y-auto p-2 transition-opacity duration-300 sm:h-61 sm:w-75 sm:p-4 sm:text-sm",
         isOpen ? "opacity-100" : "pointer-events-none opacity-0!",
       )}
     >
+      <DirectionProvider direction={dir}>
       {localeSwitcher && (
         <div className="flex items-center justify-between gap-1.5">
           <Label className="max-sm:text-xs!">{t("language")}</Label>
@@ -268,6 +272,7 @@ const SettingsContent = ({
           />
         </div>
       </div>
+      </DirectionProvider>
     </div>
   );
 };
