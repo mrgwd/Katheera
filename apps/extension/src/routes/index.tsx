@@ -13,7 +13,6 @@ import {
 import { createFileRoute, Link } from "@tanstack/react-router";
 import ZikrList from "@workspace/ui/layout/ZikrList";
 import { TopBar } from "@workspace/ui/layout/TopBar";
-import { LanguageSelect } from "../components/LanguageSelect";
 import { ext } from "../utils/browser";
 
 type BackgroundResponse = {
@@ -117,7 +116,11 @@ function App() {
       }
     } catch (err) {
       console.error("Failed to start mic:", err);
-      setStatus(t("error", { message: err instanceof Error ? err.message : String(err) }));
+      setStatus(
+        t("error", {
+          message: err instanceof Error ? err.message : String(err),
+        }),
+      );
     }
   };
 
@@ -135,7 +138,11 @@ function App() {
       }
     } catch (err) {
       console.error("Failed to stop mic:", err);
-      setStatus(t("error", { message: err instanceof Error ? err.message : String(err) }));
+      setStatus(
+        t("error", {
+          message: err instanceof Error ? err.message : String(err),
+        }),
+      );
     }
   };
 
@@ -143,7 +150,7 @@ function App() {
     <div className="group text-center">
       {/* Shared square zone: mic button + settings panel */}
       <div className="relative aspect-square w-full">
-        <TopBar localeSwitcher={<LanguageSelect />} />
+        <TopBar />
         <div className="absolute inset-0">
           <ButtonContainer
             isListening={isActive}
