@@ -26,6 +26,16 @@ export default function SettingsPanel({
   useEffect(() => {
     if (!isOpen) return;
     const handler = (e: PointerEvent) => {
+      const el = e.target as HTMLElement | null;
+      // Portaled popups (select, tooltip) live outside the panel element —
+      // interacting with them must not collapse the settings.
+      if (
+        el?.closest?.(
+          '[data-slot="select-content"], [data-slot="tooltip-content"]',
+        )
+      ) {
+        return;
+      }
       if (!panelRef.current?.contains(e.target as Node)) {
         setIsOpen(false);
       }

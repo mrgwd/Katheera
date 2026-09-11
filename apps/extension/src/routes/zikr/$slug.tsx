@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTranslations } from "use-intl";
 import { getZikrData } from "@workspace/azkar/helpers";
-import { ArrowRight } from "@workspace/ui/index";
+import { ArrowLeft } from "@workspace/ui/index";
 import { Button } from "@workspace/ui/components/button";
 import ZikrInfoList from "@workspace/ui/layout/ZikrInfoList";
 
@@ -22,7 +22,8 @@ function ZikrPage() {
     <div className="space-y-2">
       <div>
         <Button variant="ghost" render={<Link to="/"></Link>}>
-          <ArrowRight className="rtl:scale-x-[-1]" />
+          {/* Leading icon mirrors with direction (see web zikr page). */}
+          <ArrowLeft className="rtl:scale-x-[-1]" />
           {t("back")}
         </Button>
       </div>

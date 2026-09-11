@@ -8,6 +8,7 @@ export {
   LayoutGrid,
   Heart,
   ArrowRight,
+  ArrowLeft,
   ArrowDown,
   ArrowUp,
   ChevronRight,

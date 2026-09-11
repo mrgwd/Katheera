@@ -360,7 +360,7 @@ const AudioChunkView = ({
                 onClick={() => downloadWav(chunk.processedAudio)}
                 title="Download WAV"
                 aria-label="Download WAV"
-                className="ml-0.5 transition-transform hover:scale-110"
+                className="ms-0.5 transition-transform hover:scale-110"
               >
                 <Download className="size-3" />
               </button>

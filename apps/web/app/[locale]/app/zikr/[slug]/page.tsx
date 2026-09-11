@@ -5,7 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { isLocale } from "@workspace/i18n/routing";
 import { getZikrData } from "@workspace/azkar/helpers";
 import { ZikrInfo } from "@workspace/azkar/types";
-import { ArrowRight } from "@workspace/ui/index";
+import { ArrowLeft } from "@workspace/ui/index";
 import { Button } from "@workspace/ui/components/button";
 import ZikrInfoList from "@workspace/ui/layout/ZikrInfoList";
 import { Link } from "@/i18n/navigation";
@@ -54,7 +54,8 @@ export default async function ZikrDetailPage({
     <div className="space-y-2">
       <Link href="/app">
         <Button variant="ghost" className="my-4">
-          <ArrowRight className="rtl:scale-x-[-1]" />
+          {/* Leading icon mirrors with direction: ← Back / عودة → */}
+          <ArrowLeft className="rtl:scale-x-[-1]" />
           {t("back")}
         </Button>
       </Link>

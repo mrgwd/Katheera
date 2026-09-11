@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
-import { isLocale } from "@workspace/i18n/routing";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { isLocale, localeDir } from "@workspace/i18n/routing";
 import { vazirmatn } from "@/lib/fonts";
 import { version } from "../../../package.json";
 import { DynamicMetadata } from "@/features/zikr-app/components/DynamicMetadata";
@@ -25,15 +25,22 @@ export async function generateMetadata({
   };
 }
 
-export default function AppLayout({
+export default async function AppLayout({
   children,
+  params,
 }: Readonly<{
   children: React.ReactNode;
+  params: Promise<{ locale: string }>;
 }>) {
+  // Section direction follows the locale (was hardcoded rtl). Arabic
+  // content (zikr names, verses) carries its own dir/lang attributes and
+  // self-bidi correctly inside LTR layout.
+  const { locale } = await params;
+  if (isLocale(locale)) setRequestLocale(locale);
+  const dir = localeDir(isLocale(locale) ? locale : "en");
   return (
     <main
-      lang="ar"
-      dir="rtl"
+      dir={dir}
       className={`${vazirmatn.variable} mx-auto max-w-xs p-2 font-sans antialiased`}
     >
       <Providers>
