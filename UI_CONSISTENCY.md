@@ -152,3 +152,9 @@ Severity: low. Flagged because it changes behavior slightly.
    `force-static` (it masks real errors). Explicit-locale
    `getTranslations({locale})` (metadata) is unaffected. Client components
    need nothing (provider context).
+9. Motion/position driven by physical transforms must carry an `rtl:`
+   mirror (e.g. switch-thumb `translate-x` on checked). The flex row
+   mirrors automatically but the transform does not — without the mirror
+   the thumb exits the track in RTL. Base-UI direction-aware parts
+   (slider) additionally need an explicit `DirectionProvider`, which does
+   not read `document.dir` on its own.
