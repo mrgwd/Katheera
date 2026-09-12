@@ -1,12 +1,9 @@
 "use client";
 
+import { createContext, useContext, type ReactNode } from "react";
 import { useLocale, useTranslations } from "use-intl";
 import { useSettings } from "../hooks/useSettings";
-import {
-  LOCALE_CHANGE_EVENT,
-  isLocale,
-  locales,
-} from "@workspace/i18n/routing";
+import { isLocale, locales, type Locale } from "@workspace/i18n/routing";
 import {
   Select,
   SelectContent,
@@ -15,33 +12,74 @@ import {
   SelectValue,
 } from "./select";
 
+type LocaleNavigationHandler = (locale: Locale) => void;
+
+const LocaleNavigationContext = createContext<LocaleNavigationHandler | null>(
+  null,
+);
+
+/**
+ * Optional provider for hosts (like Next.js web) that require URL route
+ * transitions on locale changes. Hosts without URL locales (like the extension)
+ * omit this provider; the select then just updates persisted settings.
+ */
+export function LocaleNavigationProvider({
+  onNavigate,
+  children,
+}: {
+  onNavigate: LocaleNavigationHandler;
+  children: ReactNode;
+}) {
+  return (
+    <LocaleNavigationContext.Provider value={onNavigate}>
+      {children}
+    </LocaleNavigationContext.Provider>
+  );
+}
+
+export function useLocaleNavigation() {
+  return useContext(LocaleNavigationContext);
+}
+
 /**
  * Shared language picker (rendered inside SettingsPanel on both hosts).
  *
  * Display comes from the provider locale; a change persists via settings
- * (this is what the extension reacts to) and dispatches a window event
- * (this is what the web reacts to — see web LocaleSync). Neither host
- * passes props, so there is no drilling in either direction.
+ * (which the extension reacts to) and notifies the host navigator if
+ * provided (which the web Next.js router reacts to).
+ * Zero prop drilling through TopBar/SettingsPanel.
  */
 export function LanguageSelect() {
   const locale = useLocale();
   const t = useTranslations("locale");
   const { updateSetting } = useSettings();
+  const onNavigate = useLocaleNavigation();
+
   return (
     <Select
       value={locale}
       onValueChange={(value) => {
         if (!value || !isLocale(value) || value === locale) return;
         updateSetting("language", value);
-        window.dispatchEvent(
-          new CustomEvent(LOCALE_CHANGE_EVENT, { detail: value }),
-        );
+        onNavigate?.(value);
       }}
     >
       <SelectTrigger size="sm">
-        <SelectValue />
+        <SelectValue>
+          {(value: unknown) =>
+            isLocale(value)
+              ? t(value)
+              : isLocale(locale)
+                ? t(locale)
+                : ""
+          }
+        </SelectValue>
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent
+        side="bottom"
+        align="start"
+        alignItemWithTrigger={false}
+      >
         {locales.map((code) => (
           <SelectItem key={code} value={code}>
             {t(code)}

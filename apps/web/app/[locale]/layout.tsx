@@ -14,7 +14,7 @@ import "../../globals.css";
 import { vazirmatn } from "@/lib/fonts";
 import { ThemeProvider as NextThemesProvider } from "@workspace/ui/components/theme-provider";
 import { DirectionProvider } from "@workspace/ui/components/direction-provider";
-import { LocaleSync } from "@/components/LocaleSync";
+import { WebLocaleProvider } from "@/components/WebLocaleProvider";
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -62,7 +62,6 @@ export default async function LocaleLayout({
               this they default to LTR (some even render dir="ltr", e.g.
               Accordion root) regardless of document direction. */}
           <DirectionProvider direction={localeDir(locale)}>
-            <LocaleSync />
             <NextThemesProvider
               attribute="class"
               defaultTheme="system"
@@ -70,7 +69,7 @@ export default async function LocaleLayout({
               disableTransitionOnChange
               enableColorScheme
             >
-              {children}
+              <WebLocaleProvider>{children}</WebLocaleProvider>
             </NextThemesProvider>
           </DirectionProvider>
         </NextIntlClientProvider>

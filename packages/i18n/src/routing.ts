@@ -22,8 +22,3 @@ export function isLocale(value: unknown): value is Locale {
 export function localeDir(locale: Locale): "ltr" | "rtl" {
   return locale === "ar" ? "rtl" : "ltr";
 }
-
-// Window event name for user-initiated locale changes. The shared
-// LanguageSelect dispatches it; each host reacts in its own way
-// (extension persists via settings, web navigates via its router).
-export const LOCALE_CHANGE_EVENT = "katheera:locale-change";
