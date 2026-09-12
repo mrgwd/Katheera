@@ -9,8 +9,8 @@ const MAX_PROMPT_CHARS = 500;
 const MAX_VARIATION_CHARS = 100;
 
 export async function POST(req: NextRequest) {
-  const supabaseAdmin = getSupabaseAdmin();
   try {
+    const supabaseAdmin = getSupabaseAdmin();
     const formData = await req.formData();
 
     const audio = formData.get("audio") as File | null;
