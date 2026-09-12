@@ -13,6 +13,7 @@ const en = {
     ar: "العربية",
   },
   app: {
+    katheera: "Katheera",
     meta: {
       title: "Katheera - Web App",
       description:
@@ -123,7 +124,7 @@ const en = {
       deniedTitle: "Microphone access denied",
       deniedBody: "To contribute, please allow microphone access:",
       deniedBullets: [
-        '• Click the 🔒 or 🎙️ icon in your browser\'s address bar',
+        "• Click the 🔒 or 🎙️ icon in your browser's address bar",
         '• Set Microphone to "Allow"',
         "• Reload this page",
       ],
@@ -151,6 +152,14 @@ const en = {
       hintRecorded: "Listen back, then decide",
       hintIdle: "Tap the mic to start recording",
       skip: "Skip this prompt",
+      tones: {
+        normal: "Say it in your natural voice",
+        quiet: "Say it softly, almost a whisper",
+        fast: "Say it a bit faster than usual",
+        slow: "Say it slowly and clearly",
+        deep: "Say it with a deeper voice",
+        far: "Hold the mic further away as you speak",
+      },
     },
     complete: {
       title: "بارك الله فيك — JazakAllah Khayran",
@@ -207,8 +216,7 @@ const en = {
     },
     hero: {
       title: "Turn your <muted>silence</muted> into <brand>rewards</brand>",
-      quote:
-        "O you who have believed, remember Allah with much remembrance",
+      quote: "O you who have believed, remember Allah with much remembrance",
       cite: "— Quran 33:41",
       ctaPrimary: "Get the extension",
       ctaSecondary: "Try it now",

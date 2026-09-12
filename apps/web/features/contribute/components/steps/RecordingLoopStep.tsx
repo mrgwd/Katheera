@@ -296,7 +296,7 @@ export function RecordingLoopStep({
         {/* Tone instruction */}
         {currentPrompt.toneVariation && (
           <p className="text-muted-foreground text-center text-sm">
-            💡 {currentPrompt.toneVariation.instruction}
+            💡 {t(`tones.${currentPrompt.toneVariation.id}` as any)}
           </p>
         )}
 
