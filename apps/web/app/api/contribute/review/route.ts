@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabaseAdmin } from "@/lib/supabase";
+import { getSupabaseAdmin } from "@/lib/supabase";
 
 const ADMIN_SECRET = process.env.ADMIN_SECRET;
 
@@ -33,6 +33,7 @@ function storageExtension(rawPath: string): string {
 // GET — list samples (status, label, sort, pagination) + signed audio URLs
 // ---------------------------------------------------------------------------
 export async function GET(req: NextRequest) {
+  const supabaseAdmin = getSupabaseAdmin();
   const misconfigured = requireConfigured();
   if (misconfigured) return misconfigured;
   if (!isAuthorized(req)) {
@@ -104,6 +105,7 @@ export async function GET(req: NextRequest) {
 //   update_ei     → write ei_sample_id + pipeline_version after EI push
 // ---------------------------------------------------------------------------
 export async function POST(req: NextRequest) {
+  const supabaseAdmin = getSupabaseAdmin();
   const misconfigured = requireConfigured();
   if (misconfigured) return misconfigured;
   if (!isAuthorized(req)) {

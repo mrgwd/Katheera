@@ -1,19 +1,35 @@
 import "server-only";
-import { createClient } from "@supabase/supabase-js";
-
-const supabaseUrl = `https://${process.env.SUPABASE_PROJECT_ID}.supabase.co`;
-const supabaseServiceKey = process.env.SUPABASE_SECRET!;
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 /**
- * Server-only Supabase client with service role access.
+ * Server-only Supabase admin client with service role access.
+ * Lazily initialized on first call so that a missing SUPABASE_SECRET env var
+ * doesn't crash the Next.js build during static page-data collection.
  * Bypasses RLS — never import this in client components.
  */
-export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
-  auth: {
-    persistSession: false,
-    autoRefreshToken: false,
-  },
-});
+let _supabaseAdmin: SupabaseClient | null = null;
+
+export function getSupabaseAdmin(): SupabaseClient {
+  if (_supabaseAdmin) return _supabaseAdmin;
+
+  const supabaseUrl = `https://${process.env.SUPABASE_PROJECT_ID}.supabase.co`;
+  const supabaseServiceKey = process.env.SUPABASE_SECRET;
+
+  if (!supabaseUrl || !supabaseServiceKey) {
+    throw new Error(
+      "Supabase env vars (SUPABASE_PROJECT_ID, SUPABASE_SECRET) are not configured.",
+    );
+  }
+
+  _supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+  });
+
+  return _supabaseAdmin;
+}
 
 /**
  * Row shape for the ei_reviews table.

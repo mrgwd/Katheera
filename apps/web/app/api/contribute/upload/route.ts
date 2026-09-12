@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabaseAdmin } from "@/lib/supabase";
+import { getSupabaseAdmin } from "@/lib/supabase";
 import { AzkarList } from "@workspace/azkar/constants";
 
 const ALLOWED_LABELS = AzkarList.map((z) => z.id);
@@ -9,6 +9,7 @@ const MAX_PROMPT_CHARS = 500;
 const MAX_VARIATION_CHARS = 100;
 
 export async function POST(req: NextRequest) {
+  const supabaseAdmin = getSupabaseAdmin();
   try {
     const formData = await req.formData();
 
