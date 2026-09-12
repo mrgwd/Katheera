@@ -147,7 +147,7 @@ function App() {
   };
 
   return (
-    <div className="group text-center">
+    <main className="group text-center">
       {/* Shared square zone: mic button + settings panel */}
       <div className="relative aspect-square w-full">
         <TopBar />
@@ -161,6 +161,6 @@ function App() {
       </div>
       <p className="text-foreground hidden">{status}</p>
       <ZikrList list={counts} LinkComponent={Link} to="/zikr" />
-    </div>
+    </main>
   );
 }

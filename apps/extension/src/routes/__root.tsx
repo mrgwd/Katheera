@@ -40,7 +40,9 @@ function RootComponent() {
         <LocaleProvider>
           <Outlet />
           {import.meta.env.DEV && (
-            <DevAudioDebugger apiKey={import.meta.env.VITE_EDGE_IMPULSE_API_KEY} />
+            <DevAudioDebugger
+              apiKey={import.meta.env.VITE_EDGE_IMPULSE_API_KEY}
+            />
           )}
         </LocaleProvider>
       </SettingsProvider>
