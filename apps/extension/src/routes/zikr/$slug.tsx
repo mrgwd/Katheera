@@ -20,13 +20,13 @@ function ZikrPage() {
   console.log(data);
   return (
     <div className="space-y-2">
-      <div>
-        <Button variant="ghost" render={<Link to="/"></Link>}>
+      <Link to="/" className="block">
+        <Button variant="ghost" className="gap-1">
           {/* Leading icon mirrors with direction (see web zikr page). */}
           <ArrowLeft className="rtl:scale-x-[-1]" />
           {t("back")}
         </Button>
-      </div>
+      </Link>
       <ZikrInfoList zikrInfoList={data} />
     </div>
   );

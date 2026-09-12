@@ -4,7 +4,7 @@ export default function MicIcon({ isListening }: { isListening: boolean }) {
   return (
     <svg
       width="48"
-      height="55"
+      height="96"
       viewBox="0 0 48 55"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -36,7 +36,7 @@ export default function MicIcon({ isListening }: { isListening: boolean }) {
         className={cn(
           "stroke-background dark:stroke-muted-foreground transition-all duration-500 ease-in-out",
           isListening
-            ? "dark:stroke-secondary-foreground translate-x-14 rotate-90"
+            ? "dark:stroke-muted-foreground translate-x-14 rotate-90"
             : "opacity-0",
         )}
         id="line-1"
@@ -48,7 +48,7 @@ export default function MicIcon({ isListening }: { isListening: boolean }) {
         className={cn(
           "stroke-background dark:stroke-muted-foreground transition-all duration-500 ease-in-out",
           isListening
-            ? "dark:stroke-secondary-foreground translate-x-12 rotate-90"
+            ? "dark:stroke-muted-foreground translate-x-12 rotate-90"
             : "",
         )}
         id="line-2"
@@ -60,7 +60,7 @@ export default function MicIcon({ isListening }: { isListening: boolean }) {
         className={cn(
           "stroke-background dark:stroke-muted-foreground transition-all duration-500 ease-in-out",
           isListening
-            ? "dark:stroke-secondary-foreground translate-x-10 rotate-90"
+            ? "dark:stroke-muted-foreground translate-x-10 rotate-90"
             : "opacity-0",
         )}
         id="line-3"
@@ -72,7 +72,7 @@ export default function MicIcon({ isListening }: { isListening: boolean }) {
         className={cn(
           "stroke-background dark:stroke-muted-foreground transition-all duration-500 ease-in-out",
           isListening
-            ? "dark:stroke-secondary-foreground translate-x-14 rotate-90"
+            ? "dark:stroke-muted-foreground translate-x-14 rotate-90"
             : "",
         )}
         id="line-4"
@@ -84,7 +84,7 @@ export default function MicIcon({ isListening }: { isListening: boolean }) {
         className={cn(
           "stroke-background dark:stroke-muted-foreground transition-all duration-500 ease-in-out",
           isListening
-            ? "dark:stroke-secondary-foreground translate-x-6 rotate-90"
+            ? "dark:stroke-muted-foreground translate-x-6 rotate-90"
             : "opacity-0",
         )}
         id="line-5"

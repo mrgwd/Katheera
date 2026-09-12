@@ -29,7 +29,7 @@ export default async function Privacy({
     <div className="bg-background text-foreground min-h-screen">
       {/* <Navbar /> */}
 
-      <main className="layout pt-32 pb-24">
+      <main className="layout py-24">
         {/* Header */}
         <div
           className="animate-fade mb-12 opacity-0"

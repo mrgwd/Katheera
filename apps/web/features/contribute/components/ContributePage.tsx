@@ -71,7 +71,7 @@ export function ContributePage() {
   }, []);
 
   return (
-    <div className="layout pt-32 pb-24">
+    <div className="layout py-24">
       <div>
         {/* Step progress indicator */}
         {step !== "landing" && step !== "complete" && (

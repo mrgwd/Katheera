@@ -52,8 +52,8 @@ export default async function ZikrDetailPage({
   }
   return (
     <div className="space-y-2">
-      <Link href="/app">
-        <Button variant="ghost" className="my-4">
+      <Link href="/app" className="block">
+        <Button className="gap-1" variant="ghost">
           {/* Leading icon mirrors with direction: ← Back / عودة → */}
           <ArrowLeft className="rtl:scale-x-[-1]" />
           {t("back")}

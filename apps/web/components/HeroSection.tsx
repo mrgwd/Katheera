@@ -4,21 +4,31 @@ import type { ReactNode } from "react";
 import HeroSectionCTA from "./HeroSectionCTA";
 
 export default async function HeroSection() {
-  const t = await getTranslations("marketing.hero");
+  const t = await getTranslations();
   const tCommon = await getTranslations("marketing.common");
+  const tHero = await getTranslations("marketing.hero");
   return (
     <section className="space-y-6 pt-20">
       <div className="animate-fade flex items-center justify-center gap-2 opacity-0">
-        <Image src="/logo.png" alt={tCommon("logoAlt")} width={25} height={25} />
-        <p className="text-lg font-bold md:text-xl lg:text-2xl">Katheera</p>
+        <Image
+          src="/logo.png"
+          alt={tCommon("logoAlt")}
+          width={25}
+          height={25}
+        />
+        <p className="text-lg font-bold md:text-xl lg:text-2xl">
+          {t("app.katheera")}
+        </p>
       </div>
       <h1
         className="animate-fade text-center text-3xl font-bold text-balance opacity-0 sm:text-4xl md:text-5xl lg:text-7xl"
         style={{ animationDelay: "50ms" }}
       >
-        {t.rich("title", {
+        {tHero.rich("title", {
           muted: (chunks: ReactNode) => (
-            <span className="text-muted-foreground/50">{chunks}</span>
+            <span className="dark:text-muted-foreground text-neutral-400">
+              {chunks}
+            </span>
           ),
           brand: (chunks: ReactNode) => (
             <span className="text-brand">{chunks}</span>
@@ -30,10 +40,10 @@ export default async function HeroSection() {
         style={{ animationDelay: "100ms" }}
       >
         <q className="">
-          <i>{t("quote")}</i>
+          <i>{tHero("quote")}</i>
         </q>
         <br />
-        {t("cite")}
+        {tHero("cite")}
       </p>
       <div className="flex flex-col items-center justify-center gap-2">
         <div
@@ -46,7 +56,7 @@ export default async function HeroSection() {
           className="animate-fade text-neutral-400 opacity-0"
           style={{ animationDelay: "200ms" }}
         >
-          {t("badges")}
+          {tHero("badges")}
         </small>
       </div>
     </section>
